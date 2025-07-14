@@ -8,8 +8,18 @@ const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
     const navigate = useNavigate();
     const [popupType, setPopupType] = useState(null); // null, 'transaction', 'budget'
 
-    const handleLogout = () => {
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            const response = await fetch('http://localhost:8089/logout', {
+                method: 'GET',
+                credentials: 'include', // Very important to send JSESSIONID
+            });
+            if (response.ok) {
+                navigate("/");
+            }
+        } catch (error) {
+            throw error;
+        }
     };
 
     const closePopup = () => setPopupType(null);
@@ -45,10 +55,9 @@ const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
                         </button>
                         <div className="dropdown-menu">
                             <a className="dropdown-item" href="#">Action</a>
-                            <a className="dropdown-item" href="#">Another action</a>
-                            <a className="dropdown-item" href="#">Something else here</a>
-                            <div className="dropdown-divider"></div>
-                            <a className="dropdown-item" href="#">Separated link</a>
+                            <span className="nav-link" style={{ cursor: 'pointer' }} onClick={handleLogout}>
+                                Logout
+                            </span>
                         </div>
                     </div>
                 </div>

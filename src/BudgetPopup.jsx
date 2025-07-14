@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import './Popup.css';
+import {redirect} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const BudgetPopup = ({ onClose}) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         category: '',
         amount: '',
@@ -93,7 +96,10 @@ const BudgetPopup = ({ onClose}) => {
                     userId: null
                 }),
             });
-
+            if (response.status === 401) {
+                console.error("User is not authorized.");
+                navigate("/");
+            }
             if (!response.ok) throw new Error('Budget creation failed');
 
             alert('Budget added successfully');

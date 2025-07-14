@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import './Popup.css';
+import {redirect} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const TransactionPopup = ({ onClose }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         type: 'EXPENSE',
         category: '',
@@ -53,7 +56,10 @@ const TransactionPopup = ({ onClose }) => {
                 }),
                 credentials: 'include' // to include session cookies
             });
-
+            if (response.status === 401) {
+                console.error("User is not authorized.");
+                navigate('/');
+            }
             if (!response.ok) {
                 throw new Error('Transaction failed');
             }
