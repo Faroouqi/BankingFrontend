@@ -4,7 +4,6 @@ const Dashboard = () => {
     return (
         <div>
             <Navbar userName="Nabeel" totalBalance={120000} />
-            {/* Your dashboard content */}
         </div>
     );
 };
