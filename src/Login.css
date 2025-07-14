@@ -110,5 +110,8 @@ button:hover {
     color: #555;
     user-select: none;
 }
+.gap{
+    margin-right: 20px;
+}
 
 
