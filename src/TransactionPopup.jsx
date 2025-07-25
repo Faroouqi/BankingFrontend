@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import './Popup.css';
 import {redirect} from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ const TransactionPopup = ({ onClose }) => {
         date: '',
         note: ''
     });
+    const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState('');
     const isValidNumber=(str)=> {
         const num = Number(str);
@@ -19,21 +20,24 @@ const TransactionPopup = ({ onClose }) => {
     }
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'amount' && value !== '') {
-            if (!isValidNumber(value)) {
-                setError('Enter a valid number');
-            } else {
-                setError('');
-            }
-        }
-        else{
-            setError("")
-        }
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
     };
+    useEffect(() => {
+        const isAmountValid = formData.amount !== '' && isValidNumber(formData.amount);
+        const hasError = formData.amount !== '' && !isAmountValid;
+        const shouldDisable = !formData.amount || !formData.category || hasError;
+
+        if (error !== (hasError ? 'Enter a valid number' : '')) {
+            setError(hasError ? 'Enter a valid number' : '');
+        }
+
+        if (disabled !== shouldDisable) {
+            setDisabled(shouldDisable);
+        }
+    }, [formData, disabled, error]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -133,7 +137,7 @@ const TransactionPopup = ({ onClose }) => {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="btn-save">Save</button>
+                        <button disabled={disabled} type="submit" className="btn-save">Save</button>
                         <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
                     </div>
                 </form>

@@ -47,7 +47,9 @@ const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
                             </span>
                         </li>
                     </ul>
+                    <h4>{totalBalance}</h4>
                     <div className="btn-group">
+
                         <button type="button" className="btn btn-danger">Action</button>
                         <button type="button" className="btn btn-danger dropdown-toggle dropdown-toggle-split"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
