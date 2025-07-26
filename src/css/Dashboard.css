@@ -1,0 +1,45 @@
+/* src/css/Dashboard.css */
+
+/* Entire dashboard */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Navbar (assuming a class "navbar" for your Navbar component) */
+.navbar {
+    /* ... your existing Navbar styles ... */
+    flex-shrink: 0;
+}
+
+/* Below navbar (main section with sidebar and content) */
+.main-section {
+    display: flex;
+    flex: 1; /* Takes remaining vertical space */
+    /* width: 100%; /* Ensure it spans the full width of its parent */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 420px;
+    background-color: #2f3542;
+    color: white;
+    padding-top: 118px;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Ensures sidebar maintains its fixed width */
+    overflow-y: auto; /* Allows sidebar content to scroll independently */
+}
+
+/* Content area */
+.content-area {
+    flex: 1; /* Takes remaining horizontal space */
+    padding-top: 80px;
+    padding-left: 60px;
+    overflow-y: auto;
+    background-color: #f1f2f6;
+    box-sizing: border-box;
+    min-width: 0; /* Crucial for preventing overflow if content is too wide */
+}
+

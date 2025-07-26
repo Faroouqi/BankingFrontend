@@ -1,0 +1,118 @@
+.transactions-container {
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100%;              /* Add this */
+    display: flex;             /* Add this */
+    flex-direction: column;
+}
+
+.section-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.transactions-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 40px; /* Increased horizontal gap */
+    row-gap: 20px;     /* Keep vertical gap the same */
+}
+
+.transaction-card {
+    background-color: #fff;
+    padding: 19px 62px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #333;
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.transaction-card:hover {
+    transform: translateY(-4px);
+}
+
+.txn-date {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.txn-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.txn-category {
+    font-weight: bold;
+    color: #2f3542;
+}
+
+.txn-type {
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.txn-type.expense {
+    color: #e74c3c;
+}
+
+.txn-type.income {
+    color: #27ae60;
+}
+
+.txn-amount {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: right;
+    color: #34495e;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    gap: 15px;
+}
+
+.pagination button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.transaction-card.income {
+    border-left: 6px solid #27ae60; /* Green for income */
+}
+
+.transaction-card.expense {
+    border-left: 6px solid #e74c3c; /* Red for expense */
+}
+
+.txn-info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    margin-bottom: 8px; /* Increased vertical gap between lines */
+}
+
+.txn-date {
+    font-size: 13px;
+    color: #999;
+    margin-top: 8px; /* Additional space above date */
+}
