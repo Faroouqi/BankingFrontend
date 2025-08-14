@@ -8,6 +8,7 @@ const Sidebar = ({ handleFilterChange }) => {
 
     const handleChange = (e) => {
         const value = e.target.value;
+        console.log("filter value", value);
         setSelectedFilter(value);
         handleFilterChange(e); // Notify parent
     };

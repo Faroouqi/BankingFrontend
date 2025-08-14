@@ -3,7 +3,7 @@ import '../css/DisplayTransaction.css';
 
 const ITEMS_PER_PAGE = 9;
 
-const DisplayTransaction = ({ filter }) => {
+const DisplayTransaction = ({ filter}) => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,27 +11,50 @@ const DisplayTransaction = ({ filter }) => {
 
     useEffect(() => {
         const fetchTransactions = async () => {
+            setLoading(true);
+            setError(null);
+
             try {
-                const response = await fetch('http://localhost:8089/transaction', {
+                let url = '';
+                const currentMonth = new Date().getMonth()+1;
+                console.log('currentMonth', currentMonth);
+                if (filter === "1") {
+                    url = `http://localhost:8089/transactions/search?id=1&date=${currentMonth}`;
+                } else if (filter === "2") {
+                    url = 'http://localhost:8089/transactions/search?id=2';
+                } else if (filter === "3") {
+                    // For example, use date and enddate for range query
+                    url = `http://localhost:8089/transactions/search?id=3&date=1&enddate=3`;
+                } else {
+                    setTransactions([]);
+                    setLoading(false);
+                    return;
+                }
+
+                const response = await fetch(url, {
                     method: 'GET',
                     credentials: 'include',
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    // Try to read error text to debug
+                    const text = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
                 }
 
                 const data = await response.json();
                 setTransactions(data);
+                setCurrentPage(1); // reset page on data load
             } catch (err) {
                 setError(err.message);
+                setTransactions([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTransactions();
-    }, []);
+    }, [filter]);
 
     const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
     const paginatedTransactions = transactions.slice(
@@ -40,11 +63,11 @@ const DisplayTransaction = ({ filter }) => {
     );
 
     const handlePrev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
+        if (currentPage > 1) setCurrentPage(prev => prev - 1);
     };
 
     const handleNext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
     };
 
     if (loading) return <p className="loading-text">Loading transactions...</p>;
@@ -52,7 +75,7 @@ const DisplayTransaction = ({ filter }) => {
 
     return (
         <div className="transactions-container">
-            <h2 className="section-title">Transactions ({filter})</h2>
+            <h2 className="section-title">Transactions (Filter: {filter})</h2>
             <div className="transactions-list">
                 {paginatedTransactions.map((txn, index) => (
                     <div className={`transaction-card ${txn.type.toLowerCase()}`} key={index}>
@@ -69,11 +92,13 @@ const DisplayTransaction = ({ filter }) => {
                 ))}
             </div>
 
-            <div className="pagination">
-                <button onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
-                {/*<span>Page {currentPage} of {totalPages}</span>*/}
-                <button onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
-            </div>
+            {transactions.length > ITEMS_PER_PAGE && (
+                <div className="pagination">
+                    <button onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
+                </div>
+            )}
         </div>
     );
 };

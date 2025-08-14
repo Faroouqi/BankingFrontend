@@ -8,8 +8,24 @@ import DisplayTransaction from "./DisplayTransaction.jsx";
 
 const Dashboard = () => {
     const [filter, setFilter] = useState('');
+    const [transactions, setTransactions] = useState([]);
     const handleFilterChange = (e) => {
-        setFilter(e.target.value);
+        if(e.target.value === "current-month")
+        {
+            console.log("current-month");
+            setFilter("1");
+        }
+        if(e.target.value === "last-year")
+        {
+            console.log("last-year");
+            setFilter("2");
+        }
+        if(e.target.value === "last-6-months")
+        {
+            console.log("6 months");
+            setFilter("3");
+        }
+
     }
     return (
         <div className="dashboard-container">
@@ -20,6 +36,7 @@ const Dashboard = () => {
                     <DisplayTransaction filter={filter} />
                 </div>
             </div>
+
         </div>
     );
 };
