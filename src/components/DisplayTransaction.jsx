@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../css/DisplayTransaction.css";
 import Budgets from "./Budgets.jsx";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 9;
 
 const DisplayTransaction = ({ filter }) => {
     const [transactions, setTransactions] = useState([]);
