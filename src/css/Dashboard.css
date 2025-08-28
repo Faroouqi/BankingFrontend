@@ -1,45 +1,50 @@
-/* src/css/Dashboard.css */
-
 /* Entire dashboard */
 .dashboard-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    height: 100vh; /* exactly full screen */
+    overflow: hidden; /* no page scroll */
+    background: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Navbar (assuming a class "navbar" for your Navbar component) */
+/* Navbar */
 .navbar {
-    /* ... your existing Navbar styles ... */
+    height: 60px;
+    background: linear-gradient(135deg, #2d3436, #636e72);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     flex-shrink: 0;
 }
 
-/* Below navbar (main section with sidebar and content) */
+/* Main section (below navbar) */
 .main-section {
     display: flex;
-    flex: 1; /* Takes remaining vertical space */
-    /* width: 100%; /* Ensure it spans the full width of its parent */
+    flex: 1;
+    width: 100%;
+    overflow: hidden; /* no scroll inside */
 }
 
 /* Sidebar */
 .sidebar {
-    width: 420px;
-    background-color: #2f3542;
-    color: white;
-    padding-top: 118px;
-    box-sizing: border-box;
-    flex-shrink: 0; /* Ensures sidebar maintains its fixed width */
-    overflow-y: auto; /* Allows sidebar content to scroll independently */
+    width: 300px;
+    background: linear-gradient(180deg, #2d3436, #636e72);
+    padding: 20px;
+    color: #f1f1f1;
+    flex-shrink: 0;
+    overflow-y: auto; /* allow only sidebar to scroll if needed */
 }
 
 /* Content area */
 .content-area {
-    flex: 1; /* Takes remaining horizontal space */
-    padding-top: 80px;
-    padding-left: 60px;
-    overflow-y: auto;
-    background-color: #f1f2f6;
-    box-sizing: border-box;
-    min-width: 0; /* Crucial for preventing overflow if content is too wide */
+    flex: 1;
+    padding: 20px;
+    background: #f8fafc;
+    margin-top: 30px;
+    height: calc(100vh - 50px); /* take rest of screen below navbar */
+    overflow-y: auto; /* allow only this section to scroll if needed */
 }
-

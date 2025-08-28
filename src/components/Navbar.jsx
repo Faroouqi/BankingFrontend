@@ -6,13 +6,14 @@ import BudgetPopup from './BudgetPopup';
 
 const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
     const navigate = useNavigate();
-    const [popupType, setPopupType] = useState(null); // null, 'transaction', 'budget'
+    const [popupType, setPopupType] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const handleLogout = async () => {
         try {
             const response = await fetch('http://localhost:8089/logout', {
                 method: 'GET',
-                credentials: 'include', // send JSESSIONID
+                credentials: 'include',
             });
             if (response.ok) {
                 navigate("/");
@@ -26,54 +27,44 @@ const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
 
     return (
         <>
-            <nav className={`navbar navbar-expand-lg navbar-light bg-light ${popupType ? 'blurred' : ''}`}>
-                <a className="navbar-brand" href="#">💰 Finance Manager</a>
-                <button className="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
+            <nav className={`navbar ${popupType ? 'blurred' : ''}`}>
+                {/* Logo */}
+                <div className="logo">💰 Finance Manager</div>
 
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav mr-auto">
-                        <li className="nav-item active">
-                            <div className="tooltip-container">
-                                <span
-                                    className="nav-link"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => setPopupType('transaction')}
-                                >
-                                    Transaction
-                                </span>
-                                <span className="tooltip-text">Add transactions</span>
+                {/* Center menu */}
+                <div className="navbar-center">
+                    <div className="tooltip-container">
+                        <span className="nav-btn" onClick={() => setPopupType('transaction')}>
+                             Transaction
+                        </span>
+                        <span className="tooltip-text">Add new transaction</span>
+                    </div>
+                    <div className="tooltip-container">
+                        <span className="nav-btn" onClick={() => setPopupType('budget')}>
+                             Budget
+                        </span>
+                        <span className="tooltip-text">Set monthly budget</span>
+                    </div>
+                </div>
+
+                {/* Right section */}
+                <div className="navbar-right">
+                    <h4 className="balance">₹ {totalBalance.toLocaleString()}</h4>
+                    <div
+                        className="profile"
+                        onClick={() => setShowDropdown(!showDropdown)}
+                    >
+                        <img
+                            src={`https://ui-avatars.com/api/?name=${userName}&background=00b894&color=fff`}
+                            alt="avatar"
+                            className="avatar"
+                        />
+                        {showDropdown && (
+                            <div className="dropdown">
+                                <div>{userName}</div>
+                                <div onClick={handleLogout}>Logout</div>
                             </div>
-                        </li>
-                        <li className="nav-item">
-                            <div className="tooltip-container">
-                                <span
-                                    className="nav-link"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => setPopupType('budget')}
-                                >
-                                    Budget
-                                </span>
-                                <span className="tooltip-text">Add budget for current month</span>
-                            </div>
-                        </li>
-                    </ul>
-                    <h4 className="balance">₹ {totalBalance}</h4>
-                    <div className="btn-group">
-                        <button type="button" className="btn btn-danger">Action</button>
-                        <button type="button" className="btn btn-danger dropdown-toggle dropdown-toggle-split"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span className="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <div className="dropdown-menu">
-                            <a className="dropdown-item" href="#">Action</a>
-                            <span className="nav-link" style={{ cursor: 'pointer' }} onClick={handleLogout}>
-                                Logout
-                            </span>
-                        </div>
+                        )}
                     </div>
                 </div>
             </nav>

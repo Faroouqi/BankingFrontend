@@ -3,7 +3,6 @@ import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 
-
 const TransactionPopup = ({ onClose }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -72,7 +71,7 @@ const TransactionPopup = ({ onClose }) => {
                 throw new Error('Transaction failed');
             }
 
-            const result = await response.json();
+            await response.json();
             alert('Transaction added successfully');
             onClose();
         } catch (err) {
@@ -82,12 +81,12 @@ const TransactionPopup = ({ onClose }) => {
 
     return (
         <div className="popup-overlay">
-            {/*<button type="button" className="btn-close" aria-label="Close"  onClick={onClose}></button>*/}
             <div className="popup">
+                <div className="popup-header">
+                    <h2>Add Transaction</h2>
+                    <div className="close" onClick={onClose}><FaTimes size={20} /></div>
+                </div>
 
-                <div className="close" onClick={onClose}><FaTimes size={24} /></div>
-
-                <h2>Add Transaction</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
@@ -145,8 +144,7 @@ const TransactionPopup = ({ onClose }) => {
                     </div>
 
                     <div className="form-actions">
-                        <button disabled={disabled} type="submit" className="btn-save">Save</button>
-                        {/*<button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>*/}
+                        <button disabled={disabled} type="submit" className="btn-save">💾 Save</button>
                     </div>
                 </form>
             </div>

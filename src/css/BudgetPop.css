@@ -1,0 +1,130 @@
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(30, 30, 30, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+/* Popup Container */
+.popup {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 480px;
+    max-width: 95%;
+    padding: 25px 30px;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    color: #666;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.close:hover {
+    transform: scale(1.2);
+    color: #e63946;
+}
+
+/* Title */
+.popup h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Form */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 14px;
+}
+
+/* Inputs */
+input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 15px;
+}
+input:focus {
+    border-color: #4e54c8;
+    box-shadow: 0 0 0 2px rgba(78, 84, 200, 0.2);
+}
+
+/* Error text */
+.error {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #e63946;
+}
+
+/* Actions */
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-save {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-save:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+.btn-save:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(78, 84, 200, 0.3);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

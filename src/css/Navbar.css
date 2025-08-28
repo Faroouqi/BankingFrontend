@@ -1,23 +1,24 @@
 .navbar {
     width: 100%;
     height: 70px;
-    background-color: #1e2a38;
+    background: linear-gradient(90deg, #1a73e8, #6a11cb);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 30px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     z-index: 999;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     box-sizing: border-box;
 }
 
 .logo {
-    font-size: 24px;
-    font-weight: 600;
-    color: #00cec9;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
 }
 
 .navbar-center {
@@ -26,33 +27,34 @@
 }
 
 .nav-btn {
-    background-color: #00b894;
+    background: rgba(255, 255, 255, 0.15);
     border: none;
     color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    transition: background 0.3s;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
 }
 
 .nav-btn:hover {
-    background-color: #019875;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
 }
 
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
     position: relative;
 }
 
 .balance {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 700;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #2c3e50; /* dark slate blue-gray */
-    padding-right: 50px;
+    color: #00ff99; /* neon green balance */
 }
 
 .profile {
@@ -61,46 +63,48 @@
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #00b894;
+    border: 2px solid #fff;
+    transition: transform 0.2s ease-in-out;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
 }
 
 .dropdown {
     position: absolute;
-    top: 50px;
+    top: 55px;
     right: 0;
     background: #fff;
     color: #333;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    width: 150px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    width: 160px;
     z-index: 1001;
+    animation: fadeIn 0.2s ease-in-out;
 }
 
 .dropdown div {
     padding: 12px 16px;
     transition: background 0.3s;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .dropdown div:hover {
     background-color: #f1f1f1;
 }
 
-.dropdown-menu {
-    left: 0 !important;
-    right: auto !important;
-}
-
 .blurred {
     filter: blur(4px);
 }
 
-/* ---------------- Tooltip Styles ---------------- */
+/* Tooltip */
 .tooltip-container {
     position: relative;
     display: inline-block;
@@ -108,19 +112,19 @@
 
 .tooltip-container .tooltip-text {
     visibility: hidden;
-    background: #ffffff;
-    color: #1e2a38;
-    font-size: 13px;
+    background: #222;
+    color: #fff;
+    font-size: 12px;
     font-weight: 500;
     border-radius: 6px;
     padding: 6px 10px;
     position: absolute;
-    top: 125%; /* 👈 show below instead of above */
+    top: 125%;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
     white-space: nowrap;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
     transition: opacity 0.3s ease-in-out, visibility 0.3s;
     z-index: 1000;
 }
@@ -128,4 +132,10 @@
 .tooltip-container:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
