@@ -214,7 +214,7 @@ const DisplayTransaction = ({ filter }) => {
                 )}
                 {console.log("total pagess", totalPages)}
 
-                {/*{paginatedTransactions?.length >= ITEMS_PER_PAGE && (*/}
+                {filteredTransactions?.length >= ITEMS_PER_PAGE && (
                 <div className="pagination">
                     <button
                         className="page-btn"
@@ -233,7 +233,7 @@ const DisplayTransaction = ({ filter }) => {
                     </button>
                 </div>
 
-                {/*)}*/}
+                )}
             </div>
         );
     }
