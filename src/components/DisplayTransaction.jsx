@@ -63,10 +63,17 @@ const DisplayTransaction = ({ filter }) => {
                 }
 
                 const data = await response.json();
+                // console.log(data);
                 setTransactions(data);
-                setViewMode("summary");
+                if (filter === "1") {
+                    setViewMode("details");
+                    setSelectedMonth(currentMonth - 1); // ✅ make it zero-based
+                } else {
+                    setViewMode("summary");
+                    setSelectedMonth(null);
+                }
                 setCurrentPage(1);
-                setSelectedMonth(null);
+                // setSelectedMonth(null);
             } catch (err) {
                 setError(err.message);
                 setTransactions([]);
@@ -80,6 +87,8 @@ const DisplayTransaction = ({ filter }) => {
 
     // Group transactions by month
     const groupByMonth = () => {
+        if (!transactions?.length || !data?.length) return [];
+
         const groups = {};
 
         transactions.forEach((txn) => {
@@ -87,7 +96,6 @@ const DisplayTransaction = ({ filter }) => {
             const year = new Date(txn.date).getFullYear();
             const key = `${year}-${monthNum}`;
 
-            // Now safe to compare as numbers
             const budgetObj = data.find((b) => Number(b.month) === monthNum);
 
             if (!groups[key]) {
@@ -106,12 +114,19 @@ const DisplayTransaction = ({ filter }) => {
                 ? (spent > budget ? "Over Budget" : "Within Budget")
                 : "No Budget";
         });
+
         return Object.values(groups).sort((a, b) => b.month - a.month);
     };
 
 
-    // Pagination for detail mode
-    const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
+    const filteredTransactions = transactions.filter((txn) => {
+        if (selectedMonth === null) return true;
+        const month = new Date(txn.date).getMonth();
+        return month === selectedMonth;
+    });
+
+    const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+
     const paginatedTransactions = transactions
         .filter((txn) => {
             if (selectedMonth === null) return true;
@@ -142,62 +157,83 @@ const DisplayTransaction = ({ filter }) => {
         return (
             <div className="transactions-container">
                 <h2 className="section-title">Monthly Summary</h2>
-                <div className="transactions-list">
-                    {grouped.map((g, idx) => (
-                        <div
-                            key={idx}
-                            className="transaction-card summary-card"
-                            onClick={() => {
-                                setSelectedMonth(g.month);
-                                setViewMode("details");
-                            }}
-                        >
-                            <h3>{monthNames[g.month]} {g.year}</h3>
-                            <p>Total Spent: ₹ {g.total}</p>
-                            <p>Budget: ₹ {g.budgetAmount}</p>
-                            <p>{g.status}</p>
-                        </div>
-                    ))}
-                </div>
+                {grouped?.length > 0 ? (
+                    <div className="transactions-list">
+                        {grouped.map((g, idx) => (
+                            <div
+                                key={idx}
+                                className="transaction-card summary-card"
+                                onClick={() => {
+                                    setSelectedMonth(g.month - 1); // ✅ make zero-based
+                                    setViewMode("details");
+                                }}
+                            >
+                                <h3>{monthNames[g.month-1]} {g.year}</h3>
+                                <p>Total Spent: ₹ {g.total}</p>
+                                <p>Budget: ₹ {g.budgetAmount}</p>
+                                <p>{g.status}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="no-data">No summary data found</p>
+                )}
             </div>
         );
     }
+
 
     // Render Detail Mode:
     if (viewMode === "details") {
         return (
             <div className="transactions-container">
-                {/*<button onClick={() => setViewMode("summary")}>⬅ Back to Summary</button>*/}
                 <h2 className="section-title">
-                    Transactions for {new Date(2023, selectedMonth).toLocaleString("default", { month: "long" })}
+                    Transactions for {selectedMonth !== null
+                    ? new Date(year, selectedMonth).toLocaleString("default", { month: "long" })
+                    : "Selected Month"}
                 </h2>
-                <div className="transactions-list">
-                    {paginatedTransactions.map((txn, index) => (
-                        <div className={`transaction-card ${txn.type.toLowerCase()}`} key={index}>
-                            <div className="txn-info-row">
-                                <span className={`txn-type ${txn.type.toLowerCase()}`}>{txn.type}</span>
+
+                {paginatedTransactions?.length > 0 ? (
+                    <div className="transactions-list">
+                        {paginatedTransactions.map((txn, index) => (
+                            <div className={`transaction-card ${txn.type.toLowerCase()}`} key={index}>
+                                <div className="txn-info-row">
+                                    <span className={`txn-type ${txn.type.toLowerCase()}`}>{txn.type}</span>
+                                </div>
+                                <div className="txn-info-row">
+                                    <span className="txn-category">{txn.category}</span>
+                                    <span className="txn-separator"> - </span>
+                                    <span className="txn-amount">₹ {txn.amount}</span>
+                                </div>
+                                <div className="txn-date">{txn.date}</div>
                             </div>
-                            <div className="txn-info-row">
-                                <span className="txn-category">{txn.category}</span>
-                                <span className="txn-separator"> - </span>
-                                <span className="txn-amount">₹ {txn.amount}</span>
-                            </div>
-                            <div className="txn-date">{txn.date}</div>
-                        </div>
-                    ))}
-                </div>
-                {console.log("no of pages",paginatedTransactions.length)}
-                {paginatedTransactions.length <= ITEMS_PER_PAGE && (
-                    <div className="pagination">
-                        <button onClick={handlePrev} disabled={currentPage === 1}>
-                            Prev
-                        </button>
-                        <span> {currentPage}</span>
-                        <button onClick={handleNext} disabled={currentPage === totalPages}>
-                            Next
-                        </button>
+                        ))}
                     </div>
+                ) : (
+                    <p className="no-data">No transactions found</p>
                 )}
+                {console.log("total pagess", totalPages)}
+
+                {/*{paginatedTransactions?.length >= ITEMS_PER_PAGE && (*/}
+                <div className="pagination">
+                    <button
+                        className="page-btn"
+                        onClick={handlePrev}
+                        disabled={currentPage === 1}
+                    >
+                        ⬅ Prev
+                    </button>
+                    <span className="page-number">{currentPage} / {totalPages}</span>
+                    <button
+                        className="page-btn"
+                        onClick={handleNext}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next ➡
+                    </button>
+                </div>
+
+                {/*)}*/}
             </div>
         );
     }

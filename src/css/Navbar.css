@@ -48,8 +48,11 @@
 }
 
 .balance {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50; /* dark slate blue-gray */
+    padding-right: 50px;
 }
 
 .profile {
@@ -87,17 +90,42 @@
 .dropdown div:hover {
     background-color: #f1f1f1;
 }
+
 .dropdown-menu {
     left: 0 !important;
     right: auto !important;
 }
+
 .blurred {
     filter: blur(4px);
 }
-.balance {
-    font-size: 32px;
-    font-weight: 700;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #2c3e50; /* dark slate blue-gray */
-    padding-right: 50px;
+
+/* ---------------- Tooltip Styles ---------------- */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-container .tooltip-text {
+    visibility: hidden;
+    background: #ffffff;
+    color: #1e2a38;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 6px 10px;
+    position: absolute;
+    top: 125%; /* 👈 show below instead of above */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    white-space: nowrap;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.3s ease-in-out, visibility 0.3s;
+    z-index: 1000;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
 }

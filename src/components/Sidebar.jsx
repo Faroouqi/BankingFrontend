@@ -3,19 +3,19 @@ import '../css/Sidebar.css';
 
 const Sidebar = ({ handleFilterChange }) => {
     const [selectedFilter, setSelectedFilter] = useState('');
-    const [customStart, setCustomStart] = useState('');
-    const [customEnd, setCustomEnd] = useState('');
 
     const handleChange = (e) => {
         const value = e.target.value;
-        console.log("filter value", value);
         setSelectedFilter(value);
         handleFilterChange(e); // Notify parent
     };
 
     return (
         <div className="sidebar">
-            <h3>Filter Transactions</h3>
+            {/* Sidebar Title */}
+            <h3 className="sidebar-title">📊 Filter Transactions</h3>
+
+            {/* Filter Section */}
             <div className="filter-options">
                 <label>
                     <input
@@ -25,7 +25,7 @@ const Sidebar = ({ handleFilterChange }) => {
                         checked={selectedFilter === 'current-month'}
                         onChange={handleChange}
                     />
-                    Current Month
+                    <span>Current Month</span>
                 </label>
                 <label>
                     <input
@@ -35,7 +35,7 @@ const Sidebar = ({ handleFilterChange }) => {
                         checked={selectedFilter === 'last-6-months'}
                         onChange={handleChange}
                     />
-                    Last 6 Months
+                    <span>Last 6 Months</span>
                 </label>
                 <label>
                     <input
@@ -45,39 +45,22 @@ const Sidebar = ({ handleFilterChange }) => {
                         checked={selectedFilter === 'last-year'}
                         onChange={handleChange}
                     />
-                    Last Year
+                    <span>Last Year</span>
                 </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="filter"
-                        value="custom"
-                        checked={selectedFilter === 'custom'}
-                        onChange={handleChange}
-                    />
-                    Custom Range
-                </label>
+            </div>
 
-                {selectedFilter === 'custom' && (
-                    <div className="custom-range">
-                        <label>
-                            From:
-                            <input
-                                type="month"
-                                value={customStart}
-                                onChange={(e) => setCustomStart(e.target.value)}
-                            />
-                        </label>
-                        <label>
-                            To:
-                            <input
-                                type="month"
-                                value={customEnd}
-                                onChange={(e) => setCustomEnd(e.target.value)}
-                            />
-                        </label>
-                    </div>
-                )}
+            {/* Divider Line */}
+            <hr className="sidebar-divider" />
+
+            {/* Thought Section */}
+            <div className="finance-thought">
+                <p>
+                    💡 <i>
+                    "A great Finance Manager is not just a keeper of numbers,
+                    but a strategist who transforms data into decisions,
+                    risks into opportunities, and resources into growth."
+                </i>
+                </p>
             </div>
         </div>
     );
