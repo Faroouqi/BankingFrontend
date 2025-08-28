@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../css/DisplayTransaction.css";
 import Budgets from "./Budgets.jsx";
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 8;
 
 const DisplayTransaction = ({ filter }) => {
     const [transactions, setTransactions] = useState([]);
@@ -184,59 +184,69 @@ const DisplayTransaction = ({ filter }) => {
 
 
     // Render Detail Mode:
+    // Render Detail Mode:
     if (viewMode === "details") {
         return (
             <div className="transactions-container">
                 <h2 className="section-title">
-                    Transactions for {selectedMonth !== null
-                    ? new Date(year, selectedMonth).toLocaleString("default", { month: "long" })
-                    : "Selected Month"}
+                    Transactions for{" "}
+                    {selectedMonth !== null
+                        ? new Date(year, selectedMonth).toLocaleString("default", {
+                            month: "long",
+                        })
+                        : "Selected Month"}
                 </h2>
 
                 {paginatedTransactions?.length > 0 ? (
-                    <div className="transactions-list">
+                    <table className="transactions-table">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Amount (₹)</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
                         {paginatedTransactions.map((txn, index) => (
-                            <div className={`transaction-card ${txn.type.toLowerCase()}`} key={index}>
-                                <div className="txn-info-row">
-                                    <span className={`txn-type ${txn.type.toLowerCase()}`}>{txn.type}</span>
-                                </div>
-                                <div className="txn-info-row">
-                                    <span className="txn-category">{txn.category}</span>
-                                    <span className="txn-separator"> - </span>
-                                    <span className="txn-amount">₹ {txn.amount}</span>
-                                </div>
-                                <div className="txn-date">{txn.date}</div>
-                            </div>
+                            <tr key={index} className={txn.type.toLowerCase()}>
+                                <td className="txn-type">{txn.type}</td>
+                                <td>{txn.category}</td>
+                                <td>{txn.amount}</td>
+                                <td>{txn.date}</td>
+                            </tr>
                         ))}
-                    </div>
+                        </tbody>
+                    </table>
                 ) : (
                     <p className="no-data">No transactions found</p>
                 )}
-                {console.log("total pagess", totalPages)}
 
                 {filteredTransactions?.length >= ITEMS_PER_PAGE && (
-                <div className="pagination">
-                    <button
-                        className="page-btn"
-                        onClick={handlePrev}
-                        disabled={currentPage === 1}
-                    >
-                        ⬅ Prev
-                    </button>
-                    <span className="page-number">{currentPage} / {totalPages}</span>
-                    <button
-                        className="page-btn"
-                        onClick={handleNext}
-                        disabled={currentPage === totalPages}
-                    >
-                        Next ➡
-                    </button>
-                </div>
-
+                    <div className="pagination">
+                        <button
+                            className="page-btn"
+                            onClick={handlePrev}
+                            disabled={currentPage === 1}
+                        >
+                            ⬅ Prev
+                        </button>
+                        <span className="page-number">
+                        {currentPage} / {totalPages}
+                    </span>
+                        <button
+                            className="page-btn"
+                            onClick={handleNext}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next ➡
+                        </button>
+                    </div>
                 )}
             </div>
         );
     }
+
 };
 
 export default DisplayTransaction;

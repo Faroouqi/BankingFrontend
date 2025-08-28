@@ -31,7 +31,7 @@
 
 /* Sidebar */
 .sidebar {
-    width: 300px;
+    width: 350px;
     background: linear-gradient(180deg, #2d3436, #636e72);
     padding: 20px;
     color: #f1f1f1;
@@ -41,10 +41,12 @@
 
 /* Content area */
 .content-area {
-    flex: 1;
     padding: 20px;
     background: #f8fafc;
-    margin-top: 30px;
-    height: calc(100vh - 50px); /* take rest of screen below navbar */
-    overflow-y: auto; /* allow only this section to scroll if needed */
+    margin-top: 40px;
+    align-items: center;
+    height: calc(100vh - 50px);
+    width: 800px;/* take rest of screen below navbar */
+    overflow-y: auto;
+    margin-left: 150px/* allow only this section to scroll if needed */
 }
