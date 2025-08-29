@@ -19,6 +19,14 @@
     color: #1e3c72;
     letter-spacing: 0.5px;
 }
+.section-titles {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #1e3c72;
+    letter-spacing: 0.5px;
+}
 
 /* ======================= */
 /* Transaction Grid & Card */
@@ -40,6 +48,7 @@
     display: flex;
     flex-direction: column;
     border-left: 6px solid transparent;
+    gap: 10px;  /* ✅ adds vertical gap between lines */
 }
 
 .transaction-card:hover {
@@ -54,6 +63,85 @@
 .transaction-card.expense {
     border-left: 6px solid #e74c3c; /* Red */
 }
+
+/* ======================= */
+/* Summary Mode Card       */
+/* ======================= */
+.summary-card {
+    background: linear-gradient(135deg, #ffffff, #f9f9f9);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.summary-card p {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+.summary-card .status {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.summary-card .status.under {
+    background: rgba(34,197,94,0.15);
+    color: #16a34a;
+}
+
+.summary-card .status.over {
+    background: rgba(239,68,68,0.15);
+    color: #dc2626;
+}
+
+/* Keep only month visible */
+.summary-card .summary-details {
+    display: none;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+}
+
+/* Show details on hover */
+.summary-card:hover .summary-details {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.month-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e3c72;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+/* Smooth fade effect */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 
 /* ======================= */
 /* Transaction Details     */
@@ -160,6 +248,9 @@
     color: #2c3e50;
 }
 
+/* ======================= */
+/* Transactions Table      */
+/* ======================= */
 .transactions-table {
     width: 100%;
     border-collapse: collapse;
@@ -202,4 +293,3 @@
     color: #16a34a; /* green */
     font-weight: 500;
 }
-

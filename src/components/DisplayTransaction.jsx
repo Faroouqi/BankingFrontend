@@ -156,7 +156,7 @@ const DisplayTransaction = ({ filter }) => {
 
         return (
             <div className="transactions-container">
-                <h2 className="section-title">Monthly Summary</h2>
+                <h2 className="section-titles">Monthly Summary</h2>
                 {grouped?.length > 0 ? (
                     <div className="transactions-list">
                         {grouped.map((g, idx) => (
@@ -164,14 +164,18 @@ const DisplayTransaction = ({ filter }) => {
                                 key={idx}
                                 className="transaction-card summary-card"
                                 onClick={() => {
-                                    setSelectedMonth(g.month - 1); // ✅ make zero-based
+                                    setSelectedMonth(g.month - 1);
                                     setViewMode("details");
                                 }}
                             >
-                                <h3>{monthNames[g.month-1]} {g.year}</h3>
-                                <p>Total Spent: ₹ {g.total}</p>
-                                <p>Budget: ₹ {g.budgetAmount}</p>
-                                <p>{g.status}</p>
+                                <h3 className="month-title">
+                                    {monthNames[g.month - 1]} {g.year}
+                                </h3>
+                                <div className="summary-details">
+                                    <p>Total Spent: ₹ {g.total}</p>
+                                    <p>Budget: ₹ {g.budgetAmount}</p>
+                                    <p>{g.status}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
