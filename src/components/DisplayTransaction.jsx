@@ -13,7 +13,8 @@ const DisplayTransaction = ({ filter }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState(null);
     const year = new Date().getFullYear();
-    const [overBudget,setOverBudget] = useState("Savings")
+    let [overBudget,setOverBudget] = useState(0);
+
     useEffect(() => {
         async function fetchData() {
             try {
@@ -100,15 +101,26 @@ const DisplayTransaction = ({ filter }) => {
 
             if (!groups[key]) {
                 groups[key] = {
-                    total: 0,
+                    income: 0,
+                    expense: 0,
+                    balance: 0,
                     month: monthNum,
                     year,
                     budgetAmount: budgetObj ? budgetObj.budgetAmount : 0
                 };
             }
 
-            groups[key].total += txn.amount;
-            const spent = groups[key].total;
+            if (txn.type === "INCOME") {
+                groups[key].income += txn.amount;
+            } else if (txn.type === "EXPENSE") {
+                groups[key].expense += txn.amount;
+            }
+
+            // Balance = Income - Expense
+            groups[key].balance = groups[key].income - groups[key].expense;
+
+            // Compare only expense with budget
+            const spent = groups[key].expense;
             const budget = groups[key].budgetAmount;
             groups[key].status = budget > 0
                 ? (spent > budget ? "Over Budget" : "Within Budget")
@@ -116,10 +128,10 @@ const DisplayTransaction = ({ filter }) => {
         });
 
         return Object.values(groups).sort((a, b) => b.month - a.month);
-    };
+    }
 
 
-    const filteredTransactions = transactions.filter((txn) => {
+        const filteredTransactions = transactions.filter((txn) => {
         if (selectedMonth === null) return true;
         const month = new Date(txn.date).getMonth();
         return month === selectedMonth;
@@ -146,13 +158,16 @@ const DisplayTransaction = ({ filter }) => {
     if (loading) return <p className="loading-text">Loading transactions...</p>;
     if (error) return <p className="error-text">Error: {error}</p>;
 
-    // Render Summary Mode:
     if (viewMode === "summary") {
         const grouped = groupByMonth();
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
+
+        // calculate total spent across months
+        const totalSpent = grouped.reduce((sum, g) => sum + g.expense, 0);
+        const totalbudget = grouped.reduce((sum, g) => sum + g.budgetAmount, 0);
 
         return (
             <div className="transactions-container">
@@ -172,7 +187,7 @@ const DisplayTransaction = ({ filter }) => {
                                     {monthNames[g.month - 1]} {g.year}
                                 </h3>
                                 <div className="summary-details">
-                                    <p>Total Spent: ₹ {g.total}</p>
+                                    <p>Total Spent: ₹ {g.expense}</p>
                                     <p>Budget: ₹ {g.budgetAmount}</p>
                                     <p>{g.status}</p>
                                 </div>
@@ -182,13 +197,42 @@ const DisplayTransaction = ({ filter }) => {
                 ) : (
                     <p className="no-data">No summary data found</p>
                 )}
+
+                {/* show overall total spent */}
+                {/*<h3 className="overall-total">Total Spent (All Months): ₹{totalSpent}</h3>*/}
+
+                {filter === "3" && (
+                    <div className="total-spending-summary">
+                        <h3>Total Spending in the Last 6 Months:</h3>
+                        <span>₹{totalSpent}</span>
+                    </div>
+                )}
+
+                {filter === "2" && (
+                    <div className="total-spending-summary">
+                        <h3>Total Budget for This Year:</h3>
+                        <span>₹{totalbudget}</span>
+                    </div>
+                )}
+                {filter === "3" && (
+                    <div className="total-spending-summary">
+                        <h3>Total Budget the Last 6 Months:</h3>
+                        <span>₹{totalbudget}</span>
+                    </div>
+                )}
+
+                {filter === "2" && (
+                    <div className="total-spending-summary">
+                        <h3>Total Spending for This Year:</h3>
+                        <span>₹{totalSpent}</span>
+                    </div>
+                )}
+
             </div>
         );
     }
 
 
-    // Render Detail Mode:
-    // Render Detail Mode:
     if (viewMode === "details") {
         return (
             <div className="transactions-container">

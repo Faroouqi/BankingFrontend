@@ -293,3 +293,36 @@
     color: #16a34a; /* green */
     font-weight: 500;
 }
+/* ======================= */
+/* Total Spending Summary  */
+/* ======================= */
+.total-spending-summary {
+    margin-top: 20px;
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f6f8fc, #eef3fa);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.total-spending-summary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.total-spending-summary h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a237e; /* deep blue for title */
+    margin-bottom: 8px;
+}
+
+.total-spending-summary span {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #d32f2f; /* red for emphasis on money */
+}
