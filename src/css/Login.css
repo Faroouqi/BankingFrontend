@@ -229,3 +229,16 @@
 .Forget-password button{
     margin-left: 30px;
 }
+button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+button[disabled]::after {
+    content: " ⏳";
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.3; }
+}
