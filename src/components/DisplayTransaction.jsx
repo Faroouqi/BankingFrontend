@@ -267,7 +267,7 @@ const DisplayTransaction = ({ filter }) => {
                         </tbody>
                     </table>
                 ) : (
-                    <p className="no-data">No transactions found</p>
+                    <h1 className="no-data">No transactions found</h1>
                 )}
 
                 {filteredTransactions?.length >= ITEMS_PER_PAGE && (
