@@ -29,7 +29,7 @@ const Dashboard = () => {
     }
     return (
         <div className="dashboard-container">
-            <Navbar userName="Nabeel" totalBalance={120000} />
+            <Navbar totalBalance={120000} />
             <div className="main-section">
                 <Sidebar handleFilterChange={handleFilterChange} />
                 <div className="content-area">

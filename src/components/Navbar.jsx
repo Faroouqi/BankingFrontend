@@ -1,13 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Navbar.css';
 import { useNavigate } from 'react-router-dom';
 import TransactionPopup from './TransactionPopup';
 import BudgetPopup from './BudgetPopup';
 
-const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
+const Navbar = ({ totalBalance = 50000 }) => {
     const navigate = useNavigate();
     const [popupType, setPopupType] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [userName, setUserName] = useState('');
+
+    const handleMe = async () => {
+        try {
+            const response = await fetch("http://localhost:8089/me", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Not logged in");
+            }
+
+            const data = await response.text();
+            console.log(data);// backend returns just username as plain text
+            setUserName(data);
+        } catch (error) {
+            console.error("Error fetching current user:", error);
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -24,6 +44,11 @@ const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
     };
 
     const closePopup = () => setPopupType(null);
+
+    // 🔥 Call handleMe on component mount
+    useEffect(() => {
+        handleMe();
+    }, []);
 
     return (
         <>
@@ -55,7 +80,7 @@ const Navbar = ({ userName = 'John Doe', totalBalance = 50000 }) => {
                         onClick={() => setShowDropdown(!showDropdown)}
                     >
                         <img
-                            src={`https://ui-avatars.com/api/?name=${userName}&background=00b894&color=fff`}
+                            src={`https://ui-avatars.com/api/?name=${userName || 'User'}&background=00b894&color=fff`}
                             alt="avatar"
                             className="avatar"
                         />

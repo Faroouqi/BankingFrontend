@@ -16,7 +16,9 @@ const Login = () => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = async (e) => { e.preventDefault(); setError(''); const body = new URLSearchParams(); body.append('username', formData.username); body.append('password', formData.password); try { const res = await fetch('http://localhost:8089/login', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString(), credentials: 'include', }); if (res.ok) { navigate('/dashboard'); } else { setError('Invalid username or password'); } } catch { setError('Something went wrong. Try again.'); } };
+    const handleSubmit = async (e) => { e.preventDefault(); setError(''); const body = new URLSearchParams(); body.append('username', formData.username); body.append('password', formData.password); try { const res = await fetch('http://localhost:8089/login', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString(), credentials: 'include', }); if (res.ok) {
+        console.log(res);
+        navigate('/dashboard'); } else { setError('Invalid username or password'); } } catch { setError('Something went wrong. Try again.'); } };
 
     // ---------------- REGISTER ----------------
     const handleRegister = async (e) => {
