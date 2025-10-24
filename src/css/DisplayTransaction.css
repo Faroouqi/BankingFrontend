@@ -1,14 +1,34 @@
-/* ======================= */
-/* Transactions Container  */
-/* ======================= */
+/* =======================
+   DisplayTransaction.css
+   Full file — improved table styles + existing styles
+   ======================= */
+
+/* Optional premium font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root{
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --accent: #6C63FF;
+    --accent-2: #43E97B;
+    --muted: #6b7280;
+    --danger: #ef4444;
+    --success: #10b981;
+    --shadow: 0 8px 30px rgba(29, 33, 41, 0.08);
+}
+
+/* =======================
+   Transactions Container
+   ======================= */
 .transactions-container {
     padding: 20px;
     box-sizing: border-box;
     height: 100%;
     display: flex;
     flex-direction: column;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: #f9fafb;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg);
+    color: #0f172a;
 }
 
 .section-title {
@@ -28,9 +48,9 @@
     letter-spacing: 0.5px;
 }
 
-/* ======================= */
-/* Transaction Grid & Card */
-/* ======================= */
+/* =======================
+   Transaction Grid & Card
+   ======================= */
 .transactions-list {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -39,21 +59,21 @@
 }
 
 .transaction-card {
-    background: #fff;
+    background: var(--card);
     padding: 18px 24px;
     border-radius: 16px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-    color: #333;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    color: #0b1220;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     display: flex;
     flex-direction: column;
     border-left: 6px solid transparent;
-    gap: 10px;  /* ✅ adds vertical gap between lines */
+    gap: 10px;
 }
 
 .transaction-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
 }
 
 .transaction-card.income {
@@ -64,21 +84,21 @@
     border-left: 6px solid #e74c3c; /* Red */
 }
 
-/* ======================= */
-/* Summary Mode Card       */
-/* ======================= */
+/* =======================
+   Summary Mode Card
+   ======================= */
 .summary-card {
     background: linear-gradient(135deg, #ffffff, #f9f9f9);
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
     cursor: pointer;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .summary-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 }
 
 .summary-card h3 {
@@ -104,12 +124,12 @@
 }
 
 .summary-card .status.under {
-    background: rgba(34,197,94,0.15);
+    background: rgba(34,197,94,0.12);
     color: #16a34a;
 }
 
 .summary-card .status.over {
-    background: rgba(239,68,68,0.15);
+    background: rgba(239,68,68,0.12);
     color: #dc2626;
 }
 
@@ -142,10 +162,9 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-
-/* ======================= */
-/* Transaction Details     */
-/* ======================= */
+/* =======================
+   Transaction Details
+   ======================= */
 .txn-date {
     font-size: 13px;
     color: #7f8c8d;
@@ -201,15 +220,15 @@
 
 .no-data {
     text-align: center;
-    color: #bdc3c7;
+    color: #9aa4b2;
     font-style: italic;
     margin: 20px 0;
     font-size: 15px;
 }
 
-/* ======================= */
-/* Pagination Styling      */
-/* ======================= */
+/* =======================
+   Pagination Styling
+   ======================= */
 .pagination {
     display: flex;
     justify-content: center;
@@ -228,12 +247,12 @@
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
 .page-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.16);
 }
 
 .page-btn:disabled {
@@ -248,61 +267,140 @@
     color: #2c3e50;
 }
 
-/* ======================= */
-/* Transactions Table      */
-/* ======================= */
+/* =======================
+   Modern Transactions Table
+   ======================= */
 .transactions-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    font-size: 15px;
-    background-color: #f8fafc;
-    border-radius: 8px;
+    background: var(--card);
+    border-radius: 14px;
     overflow: hidden;
+    box-shadow: var(--shadow);
+    margin: 12px 0;
+    table-layout: fixed;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 15px;
 }
 
-.transactions-table th {
-    background-color: #1e293b; /* dark bluish */
-    color: white;
+/* Header */
+.transactions-table thead th {
     text-align: left;
-    padding: 12px;
+    padding: 14px 18px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #0b1220;
+    background: linear-gradient(90deg, rgba(108,99,255,0.06), rgba(67,233,123,0.02));
+    border-bottom: 1px solid rgba(15,23,42,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Columns sizing */
+.transactions-table thead th:nth-child(1){ width: 14%; }
+.transactions-table thead th:nth-child(2){ width: 36%; }
+.transactions-table thead th:nth-child(3){ width: 20%; text-align:right; }
+.transactions-table thead th:nth-child(4){ width: 30%; text-align:right; }
+
+/* Rows */
+.transactions-table tbody tr {
+    transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+    border-bottom: 1px solid rgba(15,23,42,0.04);
+}
+.transactions-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(108,99,255,0.03), rgba(67,233,123,0.02));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(12,18,40,0.04);
+}
+
+/* Cells */
+.transactions-table td {
+    padding: 12px 18px;
+    vertical-align: middle;
+    font-size: 0.95rem;
+    color: #0b1220;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Alternating row subtle stripe */
+.transactions-table tbody tr:nth-child(odd) {
+    background: transparent;
+}
+
+/* Type pill style inside table */
+.transactions-table .txn-type {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+
+/* income / expense coloring based on row class (lowercase in JSX) */
+.transactions-table tbody tr.income .txn-type,
+.transactions-table tbody tr.income td.txn-type,
+.transactions-table tbody tr.income td:first-child .txn-type {
+    background: linear-gradient(90deg, rgba(16,185,129,1), rgba(67,233,123,0.9));
+}
+.transactions-table tbody tr.expense .txn-type,
+.transactions-table tbody tr.expense td.txn-type,
+.transactions-table tbody tr.expense td:first-child .txn-type {
+    background: linear-gradient(90deg, rgba(239,68,68,1), rgba(255,101,132,0.95));
+}
+
+/* Right aligned amounts */
+.transactions-table td:nth-child(3),
+.transactions-table td:nth-child(4) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* No-data / loading styles */
+.loading-text, .error-text {
+    text-align: center;
+    padding: 36px 12px;
+    color: var(--muted);
     font-weight: 600;
 }
 
-.transactions-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e2e8f0;
+/* Controls: view-toggle buttons */
+.view-toggle {
+    background: transparent;
+    border: 1px solid rgba(15,23,42,0.07);
+    color: #071035;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all .12s ease;
+    box-shadow: none;
+}
+.view-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(12,18,40,0.04); }
+.view-toggle.active {
+    background: linear-gradient(90deg, var(--accent), #FF6584);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 8px 24px rgba(108,99,255,0.18);
 }
 
-.transactions-table tr:nth-child(even) {
-    background-color: #f1f5f9;
-}
+/* Breakdown list */
+.transactions-container ul { margin: 0; padding: 0; }
+.transactions-container li { font-weight: 600; color: #0b1220; }
 
-.transactions-table tr:hover {
-    background-color: #e2e8f0;
-}
-
-/* Income/Expense coloring */
-.transactions-table tr.expense td {
-    color: #dc2626; /* red */
-    font-weight: 500;
-}
-
-.transactions-table tr.income td {
-    color: #16a34a; /* green */
-    font-weight: 500;
-}
-/* ======================= */
-/* Total Spending Summary  */
-/* ======================= */
+/* =======================
+   Total Spending Summary
+   ======================= */
 .total-spending-summary {
     margin-top: 20px;
     padding: 16px 24px;
     border-radius: 12px;
     background: linear-gradient(135deg, #f6f8fc, #eef3fa);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
     text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -315,7 +413,7 @@
 .total-spending-summary h3 {
     font-size: 20px;
     font-weight: 600;
-    color: #1a237e; /* deep blue for title */
+    color: #1a237e;
     margin-bottom: 8px;
 }
 
@@ -324,5 +422,19 @@
     margin-top: 6px;
     font-size: 22px;
     font-weight: bold;
-    color: #d32f2f; /* red for emphasis on money */
+    color: #d32f2f;
 }
+
+/* =======================
+   Responsive Tweaks
+   ======================= */
+@media (max-width: 1100px) {
+    .transactions-list { grid-template-columns: repeat(2, 1fr); column-gap: 20px; }
+}
+@media (max-width: 760px) {
+    .transactions-list { grid-template-columns: 1fr; }
+    .transactions-table thead th:nth-child(4){ display: none; }
+    .transactions-table td:nth-child(4){ display: none; }
+}
+
+/* End of file */
