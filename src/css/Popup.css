@@ -1,0 +1,208 @@
+/* Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+}
+
+/* Popup box */
+.popup {
+    background: #fff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    animation: scaleIn 0.25s ease;
+    overflow: hidden;
+    color: #2c3e50; /* softer text */
+}
+
+/* Header */
+.popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, #00b894, #0984e3);
+    padding: 16px 20px;
+    color: #fff;
+}
+
+.popup-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.close:hover {
+    transform: rotate(90deg);
+}
+
+/* Form body */
+form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Labels */
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;   /* softer than black */
+    font-size: 14px;
+}
+
+/* Inputs, selects, textarea */
+input, select, textarea {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    color: #2c3e50;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #00b894;
+    box-shadow: 0 0 6px rgba(0, 184, 148, 0.4);
+    background-color: #fff;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Save button */
+.btn-save {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #00b894, #55efc4);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-save:hover:enabled {
+    background: linear-gradient(90deg, #019875, #00cec9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-save:disabled {
+    background: #ddd;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Error message */
+.error {
+    color: #ff6b6b;   /* softer coral red */
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Animation */
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Budget table */
+.budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.budget-table th, .budget-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.budget-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+
+.budget-table input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.budget-table button {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #ff6b6b;
+    color: white;
+}
+
+.budget-table button:hover {
+    background: #ff5252;
+}
+
+.budget-table button:disabled {
+    background: #ddd;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Add button */
+.btn-add {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #0984e3, #74b9ff);
+    color: white;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.btn-add:hover {
+    background: linear-gradient(90deg, #0652dd, #0984e3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
