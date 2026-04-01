@@ -41,12 +41,18 @@
 
 /* Content area */
 .content-area {
-    padding: 20px;
-    background: #f8fafc;
-    margin-top: 40px;
-    align-items: center;
-    height: calc(100vh - 50px);
-    width: 800px;/* take rest of screen below navbar */
+    flex: 1;
+    min-width: 0;
+    padding: 22px;
+    background: #f4f7ff;
     overflow-y: auto;
-    margin-left: 150px/* allow only this section to scroll if needed */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
+
+/* Adjust to full height under fixed navbar (Navbar has position fixed) */
+.main-section {
+    margin-top: 70px; /* navbar height defines vertical offset */
+}
+

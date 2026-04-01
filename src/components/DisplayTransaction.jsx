@@ -398,7 +398,7 @@ const DisplayTransaction = ({ filter }) => {
                         <table className="transactions-table">
                             <thead>
                             <tr>
-                                <th>Type</th>
+                                {/* <th>Type</th> */}
                                 <th>Category</th>
                                 <th>Amount (₹)</th>
                                 <th>Date</th>
@@ -407,7 +407,7 @@ const DisplayTransaction = ({ filter }) => {
                             <tbody>
                             {paginatedTransactions.map((txn, index) => (
                                 <tr key={index} className={(txn.type || "").toLowerCase()}>
-                                    <td className="txn-type">{txn.type}</td>
+                                    {/* <td className="txn-type">{txn.type}</td> */}
                                     <td>{txn.category}</td>
                                     <td>{txn.amount}</td>
                                     <td>{txn.date}</td>
