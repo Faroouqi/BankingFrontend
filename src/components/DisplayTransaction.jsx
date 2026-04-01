@@ -107,7 +107,8 @@ const DisplayTransaction = ({ filter }) => {
             const txYear = new Date(txn.date).getFullYear();
             const key = `${txYear}-${monthNum}`;
 
-            const budgetObj = data.find((b) => Number(b.month) === monthNum);
+            const budgetObjs = data.filter((b) => Number(b.month) === monthNum);
+            const totalBudgetAmount = budgetObjs.reduce((sum, b) => sum + (Number(b.budgetAmount) || 0), 0);
 
             if (!groups[key]) {
                 groups[key] = {
@@ -116,7 +117,7 @@ const DisplayTransaction = ({ filter }) => {
                     balance: 0,
                     month: monthNum,
                     year: txYear,
-                    budgetAmount: budgetObj ? budgetObj.budgetAmount : 0
+                    budgetAmount: totalBudgetAmount
                 };
             }
 
