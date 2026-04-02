@@ -2,7 +2,7 @@
 .sidebar {
     width: 280px;
     background: linear-gradient(180deg, #fafbff 0%, #f4f7ff 50%, #ffffff 100%);
-    color: #1f2946;
+    color: #4f6ecb;
     padding: 22px;
     height: calc(100vh - 60px);
     position: sticky;
@@ -21,7 +21,7 @@
     font-weight: 700;
     margin-bottom: 22px;
     text-align: center;
-    color: #0f172a;
+    color: #c0c8dc;
     border-bottom: 2px solid rgba(106, 17, 203, 0.30);
     padding-bottom: 12px;
     letter-spacing: 0.6px;
