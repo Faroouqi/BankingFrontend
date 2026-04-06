@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../css/DisplayTransaction.css";
 import Chart from "chart.js/auto";
+import UpdateTransaction from './UpdateTransaction';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -8,18 +9,40 @@ const DisplayTransaction = ({ filter }) => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [viewMode, setViewMode] = useState("summary"); // summary or details
+    const [viewMode, setViewMode] = useState("summary");
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState(null);
     const year = new Date().getMonth() + 1;
 
-    // toggle between table and chart in details view
-    const [detailsView, setDetailsView] = useState("table"); // "table" | "chart"
+    const [detailsView, setDetailsView] = useState("table");
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
+    // ADD these states at top
+const [selectionMode, setSelectionMode] = useState(false);
+const [selectedTxns, setSelectedTxns] = useState(new Set());
 
     // Fetch budgets for the current month
+    const handleRowClick = (txnId) => {
+    if (!selectionMode) {
+        setSelectionMode(true);
+        setSelectedTxns(new Set([txnId]));
+    } else {
+        toggleSelection(txnId);
+    }
+};
+
+const toggleSelection = (txnId) => {
+    setSelectedTxns(prev => {
+        const updated = new Set(prev);
+        if (updated.has(txnId)) {
+            updated.delete(txnId);
+        } else {
+            updated.add(txnId);
+        }
+        return updated;
+    });
+};
     useEffect(() => {
         async function fetchData() {
             console.log("Fetching budget data for month:", year);
@@ -74,15 +97,12 @@ const DisplayTransaction = ({ filter }) => {
                 const data = await response.json();
                 setTransactions(Array.isArray(data) ? data : []);
                 if (filter === "1") {
-                    console.log("Setting details view for month:", selectedMonth);
                     setViewMode("details");
-                    setSelectedMonth(currentMonth - 1); // zero-based
-                    setDetailsView("table"); // reset to table
+                    setSelectedMonth(currentMonth - 1);
+                    setDetailsView("table");
                 } else {
                     setViewMode("summary");
-                    // console.log("Setting details view for month:", currentMonth);
                     setSelectedMonth(null);
-                    console.log("Setting details view for month:", selectedMonth);
                 }
                 setCurrentPage(1);
             } catch (err) {
@@ -103,7 +123,7 @@ const DisplayTransaction = ({ filter }) => {
         const groups = {};
 
         transactions.forEach((txn) => {
-            const monthNum = new Date(txn.date).getMonth() + 1; // 1-12
+            const monthNum = new Date(txn.date).getMonth() + 1;
             const txYear = new Date(txn.date).getFullYear();
             const key = `${txYear}-${monthNum}`;
 
@@ -139,14 +159,18 @@ const DisplayTransaction = ({ filter }) => {
         return Object.values(groups).sort((a, b) => b.month - a.month);
     };
 
-    // Filtered and paginated transactions for selected month
-    const filteredTransactions = transactions.filter((txn) => {
-        if (selectedMonth === null) return true;
-        const month = new Date(txn.date).getMonth();
-        return month === selectedMonth;
-    });
+    const filteredTransactions = React.useMemo(() => 
+        transactions.filter((txn) => {
+            if (selectedMonth === null) return true;
+            const month = new Date(txn.date).getMonth();
+            return month === selectedMonth;
+        }), 
+    [transactions, selectedMonth]);
 
     const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE));
+
+    const paginatedTransactions = filteredTransactions
+        .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
     const getCategorySummary = () => {
         const summary = {};
@@ -160,8 +184,7 @@ const DisplayTransaction = ({ filter }) => {
             if (txn.type === 'EXPENSE') summary[cat].spent += amt;
             if (txn.type === 'INCOME') summary[cat].income += amt;
         });
-        // console.log("Summary after transactions:", summary);
-        console.log("Budget data for category summary:", data);
+
         if (Array.isArray(data) && monthNumber) {
             data.forEach((budget) => {
                 if (!budget || !budget.category || Number(budget.month) !== monthNumber) return;
@@ -185,14 +208,6 @@ const DisplayTransaction = ({ filter }) => {
         });
     };
 
-    const paginatedTransactions = transactions
-        .filter((txn) => {
-            if (selectedMonth === null) return true;
-            const month = new Date(txn.date).getMonth();
-            return month === selectedMonth;
-        })
-        .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
     const handlePrev = () => {
         if (currentPage > 1) setCurrentPage((prev) => prev - 1);
     };
@@ -201,9 +216,8 @@ const DisplayTransaction = ({ filter }) => {
         if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
     };
 
-    // Chart effect: always declared at top-level (not inside conditional render)
+    // Chart effect
     useEffect(() => {
-        // Only build chart when in details + chart view. Otherwise ensure cleanup.
         if (viewMode !== "details" || detailsView !== "chart") {
             if (chartInstanceRef.current) {
                 chartInstanceRef.current.destroy();
@@ -213,8 +227,6 @@ const DisplayTransaction = ({ filter }) => {
         }
 
         const txns = filteredTransactions || [];
-
-        // group by category
         const grouped = {};
         txns.forEach(tx => {
             const key = tx.category || tx.type || "Other";
@@ -233,7 +245,6 @@ const DisplayTransaction = ({ filter }) => {
             return;
         }
 
-        // destroy previous chart
         if (chartInstanceRef.current) {
             chartInstanceRef.current.destroy();
             chartInstanceRef.current = null;
@@ -244,7 +255,7 @@ const DisplayTransaction = ({ filter }) => {
             '#8E44AD', '#2ECC71', '#E67E22', '#3498DB'
         ];
 
-        const ctx = chartRef.current && chartRef.current.getContext ? chartRef.current.getContext('2d') : null;
+        const ctx = chartRef.current?.getContext('2d');
         if (!ctx) return;
 
         chartInstanceRef.current = new Chart(ctx, {
@@ -284,11 +295,9 @@ const DisplayTransaction = ({ filter }) => {
         };
     }, [detailsView, filteredTransactions, viewMode]);
 
-    // Render loading / error early
     if (loading) return <p className="loading-text">Loading transactions...</p>;
     if (error) return <p className="error-text">Error: {error}</p>;
 
-    // Summary view
     if (viewMode === "summary") {
         const grouped = groupByMonth();
         const monthNames = [
@@ -334,21 +343,18 @@ const DisplayTransaction = ({ filter }) => {
                         <span>₹{totalSpent}</span>
                     </div>
                 )}
-
                 {filter === "2" && (
                     <div className="total-spending-summary">
                         <h3>Total Budget for This Year:</h3>
                         <span>₹{totalbudget}</span>
                     </div>
                 )}
-
                 {filter === "3" && (
                     <div className="total-spending-summary">
                         <h3>Total Budget the Last 6 Months:</h3>
                         <span>₹{totalbudget}</span>
                     </div>
                 )}
-
                 {filter === "2" && (
                     <div className="total-spending-summary">
                         <h3>Total Spending for This Year:</h3>
@@ -359,7 +365,6 @@ const DisplayTransaction = ({ filter }) => {
         );
     }
 
-    // Details view (table or chart)
     if (viewMode === "details") {
         return (
             <div className="transactions-container">
@@ -372,7 +377,6 @@ const DisplayTransaction = ({ filter }) => {
                         : "Selected Month"}
                 </h2>
 
-                {/* toggle between table, chart, and category summary */}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
                     <button
                         className={`view-toggle ${detailsView === 'table' ? 'active' : ''}`}
@@ -396,31 +400,34 @@ const DisplayTransaction = ({ filter }) => {
 
                 {detailsView === 'table' ? (
                     paginatedTransactions?.length > 0 ? (
-                        <table className="transactions-table">
-                            <thead>
-                            <tr>
-                                {/* <th>Type</th> */}
-                                <th>Category</th>
-                                <th>Amount (₹)</th>
-                                <th>Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {paginatedTransactions.map((txn, index) => (
-                                <tr key={index} className={(txn.type || "").toLowerCase()}>
-                                    {/* <td className="txn-type">{txn.type}</td> */}
-                                    <td>{txn.category}</td>
-                                    <td>{txn.amount}</td>
-                                    <td>{txn.date}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
+                        <UpdateTransaction transactions={transactions} setTransactions={setTransactions}>
+                            {({ renderCell }) => (
+                                <>
+                                    <table className="transactions-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Category</th>
+                                                <th>Amount (₹)</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {paginatedTransactions.map((txn) => (
+                                                <tr key={txn.id || txn._id || Math.random()} className={(txn.type || "").toLowerCase()}>
+                                                    <td>{renderCell(txn, 'category', txn.category)}</td>
+                                                    <td>{renderCell(txn, 'amount', `₹${txn.amount}`, 'number')}</td>
+                                                    <td>{renderCell(txn, 'date', new Date(txn.date).toLocaleDateString(), 'date')}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </>
+                            )}
+                        </UpdateTransaction>
                     ) : (
                         <h1 className="no-data">No transactions found</h1>
                     )
                 ) : detailsView === 'chart' ? (
-                    // Chart view (canvas is rendered; chart is managed by top-level effect)
                     <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                         {filteredTransactions.length === 0 ? (
                             <div className="no-data">No transactions to display in chart</div>
@@ -463,9 +470,7 @@ const DisplayTransaction = ({ filter }) => {
                         )}
                     </div>
                 ) : (
-                    // Category summary view
                     (() => {
-                        console.log("Calculating category summary...");
                         const categorySummary = getCategorySummary();
                         return categorySummary.length ? (
                             <table className="transactions-table">
