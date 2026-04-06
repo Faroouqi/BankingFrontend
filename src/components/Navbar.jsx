@@ -3,6 +3,7 @@ import '../css/Navbar.css';
 import { useNavigate } from 'react-router-dom';
 import TransactionPopup from './TransactionPopup';
 import BudgetPopup from './BudgetPopup';
+import GoalPopup from './GoalPopup';
 
 const Navbar = ({ totalBalance = 50000 }) => {
     const navigate = useNavigate();
@@ -70,6 +71,12 @@ const Navbar = ({ totalBalance = 50000 }) => {
                         </span>
                         <span className="tooltip-text">Set monthly budget</span>
                     </div>
+                    <div className="tooltip-container">
+                        <span className="nav-btn" onClick={() => setPopupType('goal')}>
+                             Goal
+                        </span>
+                        <span className="tooltip-text">Set financial goal</span>
+                    </div>
                 </div>
 
                 {/* Right section */}
@@ -96,6 +103,8 @@ const Navbar = ({ totalBalance = 50000 }) => {
 
             {popupType === 'transaction' && <TransactionPopup onClose={closePopup} />}
             {popupType === 'budget' && <BudgetPopup onClose={closePopup} />}
+            {popupType === 'goal' && <GoalPopup onClose={closePopup} />}
+            
         </>
     );
 };
