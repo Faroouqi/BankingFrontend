@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import "../css/DisplayTransaction.css";
 import Chart from "chart.js/auto";
 import UpdateTransaction from './UpdateTransaction';
+import DeleteTransaction from './DeleteTransaction';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -42,6 +43,11 @@ const toggleSelection = (txnId) => {
         }
         return updated;
     });
+};
+const handleDelete = async () => {
+    console.log("Deleting transactions with IDs:", Array.from(selectedTxns));
+
+    await DeleteTransaction(selectedTxns, setTransactions);
 };
     useEffect(() => {
         async function fetchData() {
@@ -396,6 +402,9 @@ const toggleSelection = (txnId) => {
                     >
                         Category Summary
                     </button>
+                    {selectionMode && selectedTxns.size > 0 && (
+                        <button onClick={handleDelete}> 🗑 Delete </button>
+                    )}
                 </div>
 
                 {detailsView === 'table' ? (
@@ -406,20 +415,43 @@ const toggleSelection = (txnId) => {
                                     <table className="transactions-table">
                                         <thead>
                                             <tr>
+                                                {selectionMode && <th
+                                                onDoubleClick={()=>{
+                                                    setSelectionMode(false);
+                                                    setSelectedTxns(new Set());
+                                                }}> Select </th>}
                                                 <th>Category</th>
                                                 <th>Amount (₹)</th>
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {paginatedTransactions.map((txn) => (
-                                                <tr key={txn.id || txn._id || Math.random()} className={(txn.type || "").toLowerCase()}>
-                                                    <td>{renderCell(txn, 'category', txn.category)}</td>
-                                                    <td>{renderCell(txn, 'amount', `₹${txn.amount}`, 'number')}</td>
-                                                    <td>{renderCell(txn, 'date', new Date(txn.date).toLocaleDateString(), 'date')}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
+    {paginatedTransactions.map((txn) => (
+        <tr
+            key={txn.id}
+            className={`${(txn.type || "").toLowerCase()} ${
+                selectedTxns.has(txn.id) ? "selected-row" : ""
+            }`}
+            onClick={() => handleRowClick(txn.id)}
+        >
+            {selectionMode && (
+                <td>
+                    <input
+                        type="checkbox"
+                        checked={selectedTxns.has(txn.id)}
+                        onChange={() => toggleSelection(txn.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        
+                    />
+                </td>
+            )}
+
+            <td>{renderCell(txn, 'category', txn.category)}</td>
+            <td>{renderCell(txn, 'amount', `₹${txn.amount}`, 'number')}</td>
+            <td>{renderCell(txn, 'date', new Date(txn.date).toLocaleDateString(), 'date')}</td>
+        </tr>
+    ))}
+</tbody>
                                     </table>
                                 </>
                             )}

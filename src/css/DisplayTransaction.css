@@ -488,6 +488,35 @@ canvas {
     max-width: 100%;
     max-height: 280px !important;
 }
+.selected-row {
+    background-color: #dfe6e9;
+}
+
+.delete-bar {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #ddd;
+}
+
+.delete-bar button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.delete-bar button:first-child {
+    background: #ff6b6b;
+    color: white;
+}
+
+.delete-bar button:last-child {
+    background: #ccc;
+}
 
 /* =======================
    Responsive Tweaks
