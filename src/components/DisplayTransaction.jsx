@@ -3,6 +3,7 @@ import "../css/DisplayTransaction.css";
 import Chart from "chart.js/auto";
 import UpdateTransaction from './UpdateTransaction';
 import DeleteTransaction from './DeleteTransaction';
+import DisplayGoalTransaction from "./DisplayGoalTransaction";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -307,7 +308,9 @@ const handleDelete = async () => {
 
     if (loading) return <p className="loading-text">Loading transactions...</p>;
     if (error) return <p className="error-text">Error: {error}</p>;
-
+    if (filter === "4") {
+    return <DisplayGoalTransaction />;
+}
     if (viewMode === "summary") {
         const grouped = groupByMonth();
         const monthNames = [

@@ -1,0 +1,51 @@
+.goal-card {
+    position: relative;
+    padding: 14px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.goal-card:hover {
+    transform: scale(1.02);
+}
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff4d4f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.goal-card:hover .delete-btn {
+    opacity: 1;
+}
+
+.pagination {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.page-btn {
+    padding: 6px 12px;
+    border: none;
+    background: #6C63FF;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.page-btn:disabled {
+    background: #ccc;
+}

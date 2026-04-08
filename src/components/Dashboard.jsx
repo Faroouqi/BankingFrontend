@@ -25,6 +25,10 @@ const Dashboard = () => {
             console.log("6 months");
             setFilter("3");
         }
+        if(e.target.value === "goals"){
+            console.log("goals");
+            setFilter("4");
+        }
 
     }
     return (

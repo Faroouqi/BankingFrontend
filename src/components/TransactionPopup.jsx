@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import { getGoalNames } from './GoalStorage';
 
-const names = getGoalNames();
-
-const TransactionPopup = ({ onClose }) => {
+// console.log("Names in TransactionPopup:", names);
+const TransactionPopup = ({ onClose , Goals }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         type: 'EXPENSE',
@@ -18,8 +17,12 @@ const TransactionPopup = ({ onClose }) => {
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState('');
     const [goals, setGoals] = useState(false);
+    const [names, setNames] = useState([]);
 
-    const isValidNumber = (str) => {
+    useEffect(() => {
+    setNames(Goals || []);
+}, [Goals]);
+const isValidNumber = (str) => {
         const num = Number(str);
         return Number.isFinite(num);
     };
@@ -116,7 +119,7 @@ const TransactionPopup = ({ onClose }) => {
                                     required
                                 >
                                     <option value="">Select Goal</option>
-
+                                    {console.log("Rendering options with names:", names)}
                                     {names.map((name, index) => (
                                         <option key={index} value={name}>
                                             {name}
