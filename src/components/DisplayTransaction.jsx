@@ -132,7 +132,7 @@ const handleDelete = async () => {
             const monthNum = new Date(txn.date).getMonth() + 1;
             const txYear = new Date(txn.date).getFullYear();
             const key = `${txYear}-${monthNum}`;
-
+            // console.log("Processing transaction for grouping:", txn.amount,"name:", txn.category);
             const budgetObjs = data.filter((b) => Number(b.month) === monthNum);
             const totalBudgetAmount = budgetObjs.reduce((sum, b) => sum + (Number(b.budgetAmount) || 0), 0);
 
@@ -140,6 +140,7 @@ const handleDelete = async () => {
                 groups[key] = {
                     income: 0,
                     expense: 0,
+                    goal: 0,
                     balance: 0,
                     month: monthNum,
                     year: txYear,
@@ -149,10 +150,12 @@ const handleDelete = async () => {
 
             if (txn.type === "INCOME") {
                 groups[key].income += Number(txn.amount ?? 0);
-            } else if (txn.type === "EXPENSE") {
+            } else if (txn.type === "EXPENSE"){
                 groups[key].expense += Number(txn.amount ?? 0);
+            }else{
+                groups[key].goal += Number(txn.amount ?? 0);
             }
-
+            
             groups[key].balance = groups[key].income - groups[key].expense;
 
             const spent = groups[key].expense;
@@ -187,6 +190,7 @@ const handleDelete = async () => {
                 summary[cat] = { spent: 0, income: 0, budget: 0 };
             }
             const amt = Number(txn.amount ?? 0);
+            if (txn.type === 'GOAL') summary[cat].spent += amt;
             if (txn.type === 'EXPENSE') summary[cat].spent += amt;
             if (txn.type === 'INCOME') summary[cat].income += amt;
         });

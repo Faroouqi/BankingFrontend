@@ -51,7 +51,15 @@ const Sidebar = ({ handleFilterChange }) => {
 
             {/* Divider Line */}
             <hr className="sidebar-divider" />
-
+            <div className='Goal-Section'>
+                <h3 className="sidebar-title">🎯 Goal Management</h3>
+                <p>Track your financial goals to stay on top of your finances!</p>
+                <button className="goal-button" onClick={() => handleChange({ target: { value: 'goals' } })}>
+                    View Goals
+                </button>
+                <br/>
+                <br/>
+             </div>
             {/* Thought Section */}
             <div className="finance-thought">
                 <p>
