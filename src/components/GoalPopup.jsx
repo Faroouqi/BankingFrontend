@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from "react-icons/fa";
+import { addGoalNames } from './GoalStorage';
 
 const GoalPopup = ({ onClose }) => {
     const navigate = useNavigate();
@@ -58,44 +59,49 @@ const GoalPopup = ({ onClose }) => {
     }, [goals, isValidNumber]);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        for (const goal of goals) {
-            const amount = parseFloat(goal.amount);
+    const addedNames = [];
 
-            try {
-                const response = await fetch('http://localhost:8089/goals/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        goalName: goal.name,
-                        targetAmount: amount,
-                        targetDate: goal.date,
-                        userId: null
-                    }),
-                });
+    for (const goal of goals) {
+        const amount = parseFloat(goal.amount);
 
-                if (response.status === 401) {
-                    navigate("/");
-                    return;
-                }
+        try {
+            const response = await fetch('http://localhost:8089/goals/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    goalName: goal.name,
+                    targetAmount: amount,
+                    targetDate: goal.date,
+                    userId: null
+                }),
+            });
 
-                if (!response.ok) throw new Error('Goal creation failed');
-
-            } catch (err) {
-                alert('Error adding goal: ' + err.message);
+            if (response.status === 401) {
+                navigate("/");
                 return;
             }
+
+            if (!response.ok) throw new Error('Goal creation failed');
+
+            addedNames.push(goal.name);
+
+        } catch (err) {
+            alert('Error adding goal: ' + err.message);
+            return;
         }
+    }
 
-        alert('Goals added successfully');
-        setGoals([{ name: '', amount: '', date: '' }]);
-        onClose();
-    };
+    addGoalNames(addedNames);
 
+    alert('Goals added successfully');
+    setGoals([{ name: '', amount: '', date: '' }]);
+    onClose();
+};
     return (
         <div className="popup-overlay">
             <div className="popup">

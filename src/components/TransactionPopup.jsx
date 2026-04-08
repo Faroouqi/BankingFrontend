@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
+import { getGoalNames } from './GoalStorage';
+
+const names = getGoalNames();
 
 const TransactionPopup = ({ onClose }) => {
     const navigate = useNavigate();
@@ -14,6 +17,7 @@ const TransactionPopup = ({ onClose }) => {
     });
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState('');
+    const [goals, setGoals] = useState(false);
 
     const isValidNumber = (str) => {
         const num = Number(str);
@@ -21,7 +25,10 @@ const TransactionPopup = ({ onClose }) => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target;  
+        if(name === 'type') {
+            setGoals(value === 'GOAL');
+        }
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -94,19 +101,43 @@ const TransactionPopup = ({ onClose }) => {
                             <select name="type" value={formData.type} onChange={handleChange}>
                                 <option value="EXPENSE">Expense</option>
                                 <option value="INCOME">Income</option>
+                                <option value="GOAL">Goal</option>
                             </select>
                         </div>
 
-                        <div className="form-group">
-                            <label>Category:</label>
-                            <input
-                                type="text"
-                                name="category"
-                                value={formData.category}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+                                                                {goals && (
+                            <div className="form-group">
+                                <label>Goal Name:</label>
+
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="">Select Goal</option>
+
+                                    {names.map((name, index) => (
+                                        <option key={index} value={name}>
+                                            {name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {
+                            !goals && (
+                                <div className="form-group">
+                                <label>Category:</label>
+                                <input
+                                    type="text"
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-row">
