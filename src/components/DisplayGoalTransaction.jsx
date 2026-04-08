@@ -9,6 +9,7 @@ const DisplayGoalTransaction = () => {
     const [error, setError] = useState(null);
     const [selectedGoal, setSelectedGoal] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [detailsView, setDetailsView] = useState('ACTIVE'); // ACTIVE / ACHIEVED
 
     useEffect(() => {
         const fetchGoals = async () => {
@@ -49,20 +50,23 @@ const DisplayGoalTransaction = () => {
             const updated = goals.filter(g => g.id !== goalId);
             setGoals(updated);
 
-            // ✅ Reset page if needed
-            if ((currentPage - 1) * ITEMS_PER_PAGE >= updated.length) {
-                setCurrentPage(1);
-            }
+            setCurrentPage(1); // reset page
 
         } catch (err) {
             alert("Error deleting goal: " + err.message);
         }
     };
 
-    // ✅ Pagination logic
-    const totalPages = Math.ceil(goals.length / ITEMS_PER_PAGE);
+    const filteredGoals = goals.filter(goal =>
+        detailsView === "ACTIVE"
+            ? goal.status !== "ACHIEVED"
+            : goal.status === "ACHIEVED"
+    );
 
-    const paginatedGoals = goals.slice(
+    // ✅ Pagination
+    const totalPages = Math.ceil(filteredGoals.length / ITEMS_PER_PAGE);
+
+    const paginatedGoals = filteredGoals.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
@@ -75,17 +79,40 @@ const DisplayGoalTransaction = () => {
             <h2 className="section-title">🎯 My Goals</h2>
             <br />
 
+            {/* 🔥 Toggle Buttons */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                <button
+                    className={`view-toggle ${detailsView === 'ACTIVE' ? 'active' : ''}`}
+                    onClick={() => {
+                        setDetailsView('ACTIVE');
+                        setCurrentPage(1);
+                    }}
+                >
+                    Active
+                </button>
+
+                <button
+                    className={`view-toggle ${detailsView === 'ACHIEVED' ? 'active' : ''}`}
+                    onClick={() => {
+                        setDetailsView('ACHIEVED');
+                        setCurrentPage(1);
+                    }}
+                >
+                    Achieved
+                </button>
+            </div>
+
             {/* 🔹 LIST VIEW */}
             {!selectedGoal ? (
-                goals.length > 0 ? (
+                filteredGoals.length > 0 ? (
                     <>
                         <div
-    style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "12px"
-    }}
->
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(3, 1fr)",
+                                gap: "12px"
+                            }}
+                        >
                             {paginatedGoals.map((goal, index) => (
                                 <div
                                     key={index}
@@ -94,7 +121,7 @@ const DisplayGoalTransaction = () => {
                                 >
                                     <h3>{goal.goalName}</h3>
 
-                                    {/* 🗑 Hover Delete */}
+                                    {/* 🗑 Delete */}
                                     <button
                                         className="delete-btn"
                                         onClick={(e) => handleDelete(goal.id, e)}
@@ -105,7 +132,7 @@ const DisplayGoalTransaction = () => {
                             ))}
                         </div>
 
-                        {/* ✅ Pagination UI */}
+                        {/* ✅ Pagination */}
                         {totalPages > 1 && (
                             <div className="pagination">
                                 <button
@@ -131,7 +158,9 @@ const DisplayGoalTransaction = () => {
                         )}
                     </>
                 ) : (
-                    <p className="no-data">No goals found</p>
+                    <p className="no-data">
+                        No {detailsView === "ACTIVE" ? "active" : "achieved"} goals found
+                    </p>
                 )
             ) : (
                 /* 🔹 DETAIL VIEW */
@@ -165,7 +194,7 @@ const DisplayGoalTransaction = () => {
                                 <p><strong>Target:</strong> ₹ {goal.targetAmount}</p>
                                 <p><strong>Saved:</strong> ₹ {goal.savedAmount}</p>
 
-                                {/* Progress Bar */}
+                                {/* Progress */}
                                 <div style={{
                                     height: "10px",
                                     background: "#eee",

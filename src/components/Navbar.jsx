@@ -5,12 +5,14 @@ import TransactionPopup from './TransactionPopup';
 import BudgetPopup from './BudgetPopup';
 import GoalPopup from './GoalPopup';
 import { getGoalNames } from './GoalStorage';
+import { removeGoalName } from './GoalStorage';
 const Navbar = ({ totalBalance = 50000 }) => {
     const navigate = useNavigate();
     const [popupType, setPopupType] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [userName, setUserName] = useState('');
     const [goalNames, setGoalNames] = useState(getGoalNames());
+
     const handleMe = async () => {
         try {
             const response = await fetch("http://localhost:8089/me", {
