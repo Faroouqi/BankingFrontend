@@ -1,4 +1,6 @@
-const DeleteTransaction = async (selectedTxns, setTransactions) => {
+import { removeGoalName } from './GoalStorage';
+
+const DeleteTransaction = async (selectedTxns, setTransactions, onUpdate) => {
     try {
         const ids = Array.from(selectedTxns);
         console.log("Deleting IDs:", ids);
@@ -21,6 +23,7 @@ const DeleteTransaction = async (selectedTxns, setTransactions) => {
         setTransactions(prev =>
             prev.filter(txn => !selectedTxns.has(txn.id))
         );
+        removeGoalName(ids);
 
     } catch (err) {
         alert(err.message);

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import '../css/Sidebar.css';
+import { removeGoalName } from './GoalStorage';
+import { getGoalNames } from './GoalStorage';
 
 const Sidebar = ({ handleFilterChange }) => {
     const [selectedFilter, setSelectedFilter] = useState('');
 
     const handleChange = (e) => {
+        console.log("Current goal names after removal:", getGoalNames());
         const value = e.target.value;
         setSelectedFilter(value);
-        handleFilterChange(e); // Notify parent
+        handleFilterChange(e); 
+
+
     };
 
     return (

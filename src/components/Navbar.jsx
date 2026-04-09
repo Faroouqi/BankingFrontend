@@ -6,12 +6,12 @@ import BudgetPopup from './BudgetPopup';
 import GoalPopup from './GoalPopup';
 import { getGoalNames } from './GoalStorage';
 import { removeGoalName } from './GoalStorage';
-const Navbar = ({ totalBalance = 50000 }) => {
+const Navbar = ({ totalBalance = 50000, onUpdate, Goals }) => {
     const navigate = useNavigate();
     const [popupType, setPopupType] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [userName, setUserName] = useState('');
-    const [goalNames, setGoalNames] = useState(getGoalNames());
+    // const [goalNames, setGoalNames] = useState(getGoalNames());
 
     const handleMe = async () => {
         try {
@@ -31,9 +31,9 @@ const Navbar = ({ totalBalance = 50000 }) => {
             console.error("Error fetching current user:", error);
         }
     };
-    const refreshGoals =  (newValues) => {
-        setGoalNames(newValues);
-    }
+    // const refreshGoals =  (newValues) => {
+    //     setGoalNames(newValues);
+    // }
     const handleLogout = async () => {
         try {
             const response = await fetch('http://localhost:8089/logout', {
@@ -105,9 +105,9 @@ const Navbar = ({ totalBalance = 50000 }) => {
                 </div>
             </nav>
 
-            {popupType === 'transaction' && <TransactionPopup onClose={closePopup} Goals={goalNames} />}
+            {popupType === 'transaction' && <TransactionPopup onClose={closePopup} Goals={Goals} />}
             {popupType === 'budget' && <BudgetPopup onClose={closePopup} />}
-            {popupType === 'goal' && <GoalPopup onClose={closePopup} onUpdate={refreshGoals} />}
+            {popupType === 'goal' && <GoalPopup onClose={closePopup} onUpdate={onUpdate} />}
             
         </>
     );

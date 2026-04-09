@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../css/DisplayGoal.css";
+import { getGoalNames, removeGoalName } from "./GoalStorage";
 
 const ITEMS_PER_PAGE = 6;
 
-const DisplayGoalTransaction = () => {
+const DisplayGoalTransaction = ({ onUpdate }) => {
     const [goals, setGoals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -32,8 +33,7 @@ const DisplayGoalTransaction = () => {
         fetchGoals();
     }, []);
 
-    // ✅ Delete handler
-    const handleDelete = async (goalId, e) => {
+    const handleDelete = async (goalId, goalName, e) => {
         e.stopPropagation();
 
         const confirmDelete = window.confirm("Delete this goal?");
@@ -49,12 +49,15 @@ const DisplayGoalTransaction = () => {
 
             const updated = goals.filter(g => g.id !== goalId);
             setGoals(updated);
-
+            
             setCurrentPage(1); // reset page
 
         } catch (err) {
             alert("Error deleting goal: " + err.message);
         }
+        removeGoalName(goalName);
+        onUpdate(prev => prev.filter(name => name !== goalName));
+        console.log("Updated goals:", getGoalNames);
     };
 
     const filteredGoals = goals.filter(goal =>
@@ -124,7 +127,7 @@ const DisplayGoalTransaction = () => {
                                     {/* 🗑 Delete */}
                                     <button
                                         className="delete-btn"
-                                        onClick={(e) => handleDelete(goal.id, e)}
+                                        onClick={(e) => handleDelete(goal.id,goal.goalName, e)}
                                     >
                                         🗑
                                     </button>

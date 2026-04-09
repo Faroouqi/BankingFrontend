@@ -7,7 +7,7 @@ import DisplayGoalTransaction from "./DisplayGoalTransaction";
 
 const ITEMS_PER_PAGE = 8;
 
-const DisplayTransaction = ({ filter }) => {
+const DisplayTransaction = ({ filter, onUpdate }) => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -21,8 +21,8 @@ const DisplayTransaction = ({ filter }) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
     // ADD these states at top
-const [selectionMode, setSelectionMode] = useState(false);
-const [selectedTxns, setSelectedTxns] = useState(new Set());
+    const [selectionMode, setSelectionMode] = useState(false);
+    const [selectedTxns, setSelectedTxns] = useState(new Set());
 
     // Fetch budgets for the current month
     const handleRowClick = (txnId) => {
@@ -48,7 +48,7 @@ const toggleSelection = (txnId) => {
 const handleDelete = async () => {
     console.log("Deleting transactions with IDs:", Array.from(selectedTxns));
 
-    await DeleteTransaction(selectedTxns, setTransactions);
+    await DeleteTransaction(selectedTxns, setTransactions , onUpdate);
 };
     useEffect(() => {
         async function fetchData() {
@@ -309,7 +309,7 @@ const handleDelete = async () => {
     if (loading) return <p className="loading-text">Loading transactions...</p>;
     if (error) return <p className="error-text">Error: {error}</p>;
     if (filter === "4") {
-    return <DisplayGoalTransaction />;
+    return <DisplayGoalTransaction  onUpdate={onUpdate}/>;
 }
     if (viewMode === "summary") {
         const grouped = groupByMonth();

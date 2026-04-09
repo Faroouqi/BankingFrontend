@@ -5,10 +5,15 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import '../css/Dashboard.css'
 import DisplayTransaction from "./DisplayTransaction.jsx";
+import { removeGoalName } from './GoalStorage';
+import { getGoalNames } from './GoalStorage';
+
+
 
 const Dashboard = () => {
     const [filter, setFilter] = useState('');
     const [transactions, setTransactions] = useState([]);
+    const [goalNames, setGoalNames] = useState(getGoalNames());
     const handleFilterChange = (e) => {
         if(e.target.value === "current-month")
         {
@@ -31,13 +36,20 @@ const Dashboard = () => {
         }
 
     }
+
+    const refreshGoals =  (newValues) => {
+        setGoalNames(newValues);
+    }
+
+    
+
     return (
         <div className="dashboard-container">
-            <Navbar totalBalance={120000} />
+            <Navbar totalBalance={120000} onUpdate = {refreshGoals} Goals = {goalNames} />
             <div className="main-section">
                 <Sidebar handleFilterChange={handleFilterChange} />
                 <div className="content-area">
-                    <DisplayTransaction filter={filter} />
+                    <DisplayTransaction filter={filter} onUpdate = {refreshGoals}/>
                 </div>
             </div>
 
