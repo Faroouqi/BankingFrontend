@@ -11,6 +11,38 @@
     backdrop-filter: blur(3px);
 }
 
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown input {
+    width: 100%;
+    padding: 8px;
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 100%;   /* 👈 directly below input */
+    left: 0;
+    width: 100%;
+    max-height: 120px; /* 👈 fixed height (3 items) */
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    z-index: 999; /* 👈 VERY IMPORTANT */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
 /* Popup box */
 .popup {
     background: #fff;

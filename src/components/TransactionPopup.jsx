@@ -37,6 +37,12 @@ const isValidNumber = (str) => {
             [name]: value
         }));
     };
+    const [searchTerm, setSearchTerm] = useState("");
+const [showDropdown, setShowDropdown] = useState(false);
+
+const filteredGoals = names.filter(name =>
+    name.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
     useEffect(() => {
         const isAmountValid = formData.amount !== '' && isValidNumber(formData.amount);
@@ -108,26 +114,49 @@ const isValidNumber = (str) => {
                             </select>
                         </div>
 
-                                                                {goals && (
-                            <div className="form-group">
-                                <label>Goal Name:</label>
+                                                                    {goals && (
+    <div className="form-group">
+        <label>Goal Name:</label>
 
-                                <select
-                                    name="category"
-                                    value={formData.category}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select Goal</option>
-                                    {console.log("Rendering options with names:", names)}
-                                    {names.map((name, index) => (
-                                        <option key={index} value={name}>
-                                            {name}
-                                        </option>
-                                    ))}
-                                </select>
+        <div className="custom-dropdown">
+            <input
+                type="text"
+                placeholder="Search Goal..."
+                value={searchTerm}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+            />
+
+            {showDropdown && searchTerm && (
+                <div className="dropdown-list">
+                    {filteredGoals.length > 0 ? (
+                        filteredGoals.map((name, index) => (
+                            <div
+                                key={index}
+                                className="dropdown-item"
+                                onClick={() => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        category: name
+                                    }));
+                                    setSearchTerm(name);
+                                    setShowDropdown(false);
+                                }}
+                            >
+                                {name}
                             </div>
-                        )}
+                        ))
+                    ) : (
+                        <div className="no-data">No match found</div>
+                    )}
+                </div>
+            )}
+        </div>
+    </div>
+)}
                         {
                             !goals && (
                                 <div className="form-group">
