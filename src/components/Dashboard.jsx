@@ -34,6 +34,10 @@ const Dashboard = () => {
             console.log("goals");
             setFilter("4");
         }
+        if(e.target.value === "spendings"){
+            console.log("spendings");
+            setFilter("5");
+        }
 
     }
 

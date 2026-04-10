@@ -59,11 +59,23 @@ const Sidebar = ({ handleFilterChange }) => {
             <div className='Goal-Section'>
                 <h3 className="sidebar-title">🎯 Goal Management</h3>
                 <p>Track your financial goals to stay on top of your finances!</p>
-                <button className="goal-button" onClick={() => handleChange({ target: { value: 'goals' } })}>
-                    View Goals
-                </button>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+    <button
+        className="goal-button"
+        onClick={() => handleChange({ target: { value: 'goals' } })}
+    >
+        View Goals
+    </button>
+
+    <button
+        className="goal-button"
+        onClick={() => handleChange({ target: { value: 'spendings' } })}
+    >
+        View Spendings
+    </button>
+</div>
                 <br/>
-                <br/>
+                {/* <br/> */}
              </div>
             {/* Thought Section */}
             <div className="finance-thought">

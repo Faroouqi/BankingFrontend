@@ -4,6 +4,7 @@ import Chart from "chart.js/auto";
 import UpdateTransaction from './UpdateTransaction';
 import DeleteTransaction from './DeleteTransaction';
 import DisplayGoalTransaction from "./DisplayGoalTransaction";
+import DisplaySpendingChart from "./DisplaySpendingChart";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -311,6 +312,9 @@ const handleDelete = async () => {
     if (filter === "4") {
     return <DisplayGoalTransaction  onUpdate={onUpdate}/>;
 }
+    if (filter === "5") {
+    return <DisplaySpendingChart  onUpdate={onUpdate}/>;
+    }
     if (viewMode === "summary") {
         const grouped = groupByMonth();
         const monthNames = [
