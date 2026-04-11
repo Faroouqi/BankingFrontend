@@ -5,6 +5,7 @@ import UpdateTransaction from './UpdateTransaction';
 import DeleteTransaction from './DeleteTransaction';
 import DisplayGoalTransaction from "./DisplayGoalTransaction";
 import DisplaySpendingChart from "./DisplaySpendingChart";
+import SmartInsights from "./SmartInsights";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -413,6 +414,12 @@ const handleDelete = async () => {
                     >
                         Category Summary
                     </button>
+                    <button
+                        className={`view-toggle ${detailsView === 'Insights' ? 'active' : ''}`}
+                        onClick={() => setDetailsView('Insights')}
+                    >
+                        Insights
+                    </button>
                     {selectionMode && selectedTxns.size > 0 && (
                         <button onClick={handleDelete}> 🗑 Delete </button>
                     )}
@@ -512,7 +519,7 @@ const handleDelete = async () => {
                             </>
                         )}
                     </div>
-                ) : (
+                ) :detailsView === 'category' ? (
                     (() => {
                         const categorySummary = getCategorySummary();
                         return categorySummary.length ? (
@@ -542,7 +549,7 @@ const handleDelete = async () => {
                             <h1 className="no-data">No category data found</h1>
                         );
                     })()
-                )}
+                ): (<SmartInsights/>)}
 
                 {detailsView === 'table' && filteredTransactions?.length >= ITEMS_PER_PAGE && (
                     <div className="pagination">
