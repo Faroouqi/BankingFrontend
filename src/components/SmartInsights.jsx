@@ -12,7 +12,7 @@ const SmartInsights = ({month }) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:8089/insights/${month}`, {
+        const response = await fetch(`http://localhost:8089/insights/${month+1}`, {
                     credentials: 'include'
                 });
         if (!response.ok) {
@@ -30,7 +30,7 @@ const SmartInsights = ({month }) => {
     };
 
     fetchInsights();
-  }, []);
+  }, [month]);
 
   return (
     <div className="smart-insights-wrapper">
