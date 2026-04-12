@@ -6,6 +6,7 @@ import DeleteTransaction from './DeleteTransaction';
 import DisplayGoalTransaction from "./DisplayGoalTransaction";
 import DisplaySpendingChart from "./DisplaySpendingChart";
 import SmartInsights from "./SmartInsights";
+import SavingsTrend from "./SavingsTrend";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -105,6 +106,7 @@ const handleDelete = async () => {
 
                 const data = await response.json();
                 setTransactions(Array.isArray(data) ? data : []);
+                console.log("Month for current",currentMonth-1);
                 if (filter === "1") {
                     setViewMode("details");
                     setSelectedMonth(currentMonth - 1);
@@ -315,6 +317,9 @@ const handleDelete = async () => {
 }
     if (filter === "5") {
     return <DisplaySpendingChart  onUpdate={onUpdate}/>;
+    }
+    if(filter === "6"){
+        return <SavingsTrend/>;
     }
     if (viewMode === "summary") {
         const grouped = groupByMonth();
@@ -549,7 +554,7 @@ const handleDelete = async () => {
                             <h1 className="no-data">No category data found</h1>
                         );
                     })()
-                ): (<SmartInsights/>)}
+                ): (<SmartInsights month = { selectedMonth } />)}
 
                 {detailsView === 'table' && filteredTransactions?.length >= ITEMS_PER_PAGE && (
                     <div className="pagination">

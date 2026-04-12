@@ -57,22 +57,31 @@ const Sidebar = ({ handleFilterChange }) => {
             {/* Divider Line */}
             <hr className="sidebar-divider" />
             <div className='Goal-Section'>
-                <h3 className="sidebar-title">🎯 Goal Management</h3>
-                <p>Track your financial goals to stay on top of your finances!</p>
+                <h3 className="sidebar-title">🎯 Financial Overview</h3>
+                {/* <p>Track your financial goals to stay on top of your finances!</p> */}
                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-    <button
-        className="goal-button"
-        onClick={() => handleChange({ target: { value: 'goals' } })}
-    >
-        View Goals
-    </button>
+   <div className="view-toggle">
+  <button
+    className={`toggle-btn ${selectedFilter === 'goals' ? "active" : ""}`}
+    onClick={() => handleChange({ target: { value: "goals" } })}
+  >
+    Goals
+  </button>
 
-    <button
-        className="goal-button"
-        onClick={() => handleChange({ target: { value: 'spendings' } })}
-    >
-        View Spendings
-    </button>
+  <button
+    className={`toggle-btn ${selectedFilter === 'spendings' ? "active" : ""}`}
+    onClick={() => handleChange({ target: { value: "spendings" } })}
+  >
+    Spendings
+  </button>
+
+  <button
+    className={`toggle-btn ${selectedFilter === 'savings' ? "active" : ""}`}
+    onClick={() => handleChange({ target: { value: "savings" } })}
+  >
+    Savings
+  </button>
+</div>
 </div>
                 <br/>
                 {/* <br/> */}

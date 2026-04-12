@@ -38,6 +38,10 @@ const Dashboard = () => {
             console.log("spendings");
             setFilter("5");
         }
+        if(e.target.value === "savings"){
+            console.log("savings");
+            setFilter("6");
+        }
 
     }
 

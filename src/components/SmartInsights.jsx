@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "../css/SmartInsights.css";
 
-const SmartInsights = () => {
+const SmartInsights = ({month }) => {
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-
+    if (!month) return;
     const fetchInsights = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:8089/insights/`, {
+        const response = await fetch(`http://localhost:8089/insights/${month}`, {
                     credentials: 'include'
                 });
         if (!response.ok) {
