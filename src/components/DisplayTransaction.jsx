@@ -538,7 +538,7 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {categorySummary.map((item) => (
+                                {categorySummary.map((item) => ( item.income === 0 &&
                                     <tr key={item.category}>
                                         <td>{item.category}</td>
                                         <td>{currencyFormatter.format(item.spent)}</td>
