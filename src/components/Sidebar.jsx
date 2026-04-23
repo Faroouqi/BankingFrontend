@@ -1,102 +1,82 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../css/Sidebar.css';
-import { removeGoalName } from './GoalStorage';
-import { getGoalNames } from './GoalStorage';
+
+const periodFilters = [
+    { value: 'current-month', title: 'Current Month', description: 'Review recent transactions and update entries quickly.' },
+    { value: 'last-6-months', title: 'Last 6 Months', description: 'Understand medium-term spending and budget movement.' },
+    { value: 'last-year', title: 'Last Year', description: 'Compare long-term performance against your annual budget.' },
+];
+
+const overviewFilters = [
+    { value: 'goals', label: 'Goals' },
+    { value: 'spendings', label: 'Spending' },
+    { value: 'savings', label: 'Savings' },
+];
 
 const Sidebar = ({ handleFilterChange }) => {
-    const [selectedFilter, setSelectedFilter] = useState('');
+    const [selectedFilter, setSelectedFilter] = useState('current-month');
 
-    const handleChange = (e) => {
-        console.log("Current goal names after removal:", getGoalNames());
-        const value = e.target.value;
-        setSelectedFilter(value);
-        handleFilterChange(e); 
-
-
+    const handleChange = (event) => {
+        setSelectedFilter(event.target.value);
+        handleFilterChange(event);
     };
 
     return (
-        <div className="sidebar">
-            {/* Sidebar Title */}
-            <h3 className="sidebar-title">📊 Filter Transactions</h3>
-
-            {/* Filter Section */}
-            <div className="filter-options">
-                <label>
-                    <input
-                        type="radio"
-                        name="filter"
-                        value="current-month"
-                        checked={selectedFilter === 'current-month'}
-                        onChange={handleChange}
-                    />
-                    <span>Current Month</span>
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="filter"
-                        value="last-6-months"
-                        checked={selectedFilter === 'last-6-months'}
-                        onChange={handleChange}
-                    />
-                    <span>Last 6 Months</span>
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="filter"
-                        value="last-year"
-                        checked={selectedFilter === 'last-year'}
-                        onChange={handleChange}
-                    />
-                    <span>Last Year</span>
-                </label>
-            </div>
-
-            {/* Divider Line */}
-            <hr className="sidebar-divider" />
-            <div className='Goal-Section'>
-                <h3 className="sidebar-title">🎯 Financial Overview</h3>
-                {/* <p>Track your financial goals to stay on top of your finances!</p> */}
-                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-   <div className="view-toggle">
-  <button
-    className={`toggle-btn ${selectedFilter === 'goals' ? "active" : ""}`}
-    onClick={() => handleChange({ target: { value: "goals" } })}
-  >
-    Goals
-  </button>
-
-  <button
-    className={`toggle-btn ${selectedFilter === 'spendings' ? "active" : ""}`}
-    onClick={() => handleChange({ target: { value: "spendings" } })}
-  >
-    Spendings
-  </button>
-
-  <button
-    className={`toggle-btn ${selectedFilter === 'savings' ? "active" : ""}`}
-    onClick={() => handleChange({ target: { value: "savings" } })}
-  >
-    Savings
-  </button>
-</div>
-</div>
-                <br/>
-                {/* <br/> */}
-             </div>
-            {/* Thought Section */}
-            <div className="finance-thought">
-                <p>
-                    💡 <i>
-                    "A great Finance Manager is not just a keeper of numbers,
-                    but a strategist who transforms data into decisions,
-                    risks into opportunities, and resources into growth."
-                </i>
+        <aside className="sidebar">
+            <div className="sidebar-section">
+                <p className="sidebar-kicker">Workspace</p>
+                <h3 className="sidebar-title">Explore your financial story</h3>
+                <p className="sidebar-copy">
+                    Switch between quick transaction views and broader performance summaries.
                 </p>
             </div>
-        </div>
+
+            <div className="sidebar-section">
+                <h4 className="sidebar-section-title">Transaction Filters</h4>
+                <div className="filter-options">
+                    {periodFilters.map((filterOption) => (
+                        <label
+                            key={filterOption.value}
+                            className={selectedFilter === filterOption.value ? 'filter-card active' : 'filter-card'}
+                        >
+                            <input
+                                type="radio"
+                                name="filter"
+                                value={filterOption.value}
+                                checked={selectedFilter === filterOption.value}
+                                onChange={handleChange}
+                            />
+                            <span className="filter-card-title">{filterOption.title}</span>
+                            <small>{filterOption.description}</small>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            <div className="sidebar-section">
+                <h4 className="sidebar-section-title">Financial Overview</h4>
+                <div className="overview-toggle-group">
+                    {overviewFilters.map((filterOption) => (
+                        <button
+                            key={filterOption.value}
+                            type="button"
+                            className={selectedFilter === filterOption.value ? 'overview-toggle active' : 'overview-toggle'}
+                            onClick={() => handleChange({ target: { value: filterOption.value } })}
+                        >
+                            {filterOption.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="finance-thought">
+                <h4>Focus for this month</h4>
+                <p>
+                    Strong financial systems come from consistent tracking, realistic budgets, and
+                    decisions backed by data.
+                </p>
+            </div>
+        </aside>
     );
 };
 

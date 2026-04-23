@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaTimes } from "react-icons/fa";
-import { addGoalNames } from './GoalStorage';
-import { addGoalName } from './GoalStorage';
-import { getGoalNames } from './GoalStorage';
+import { FaTimes } from 'react-icons/fa';
+import { addGoalName, getGoalNames } from './GoalStorage';
 
 const GoalPopup = ({ onClose, onUpdate }) => {
     const navigate = useNavigate();
-
     const [goals, setGoals] = useState([{ name: '', amount: '', date: '' }]);
     const [errors, setErrors] = useState([{ amount: '' }]);
     const [disabled, setDisabled] = useState(true);
@@ -17,39 +14,34 @@ const GoalPopup = ({ onClose, onUpdate }) => {
         return Number.isFinite(num);
     }, []);
 
-    const handleChange = (index, e) => {
-        const { name, value } = e.target;
-        setGoals(prev =>
-            prev.map((goal, i) =>
-                i === index ? { ...goal, [name]: value } : goal
-            )
+    const handleChange = (index, event) => {
+        const { name, value } = event.target;
+        setGoals((prev) =>
+            prev.map((goal, itemIndex) => (
+                itemIndex === index ? { ...goal, [name]: value } : goal
+            )),
         );
     };
 
     const addRow = () => {
-        setGoals(prev => [...prev, { name: '', amount: '', date: '' }]);
-        setErrors(prev => [...prev, { amount: '' }]);
+        setGoals((prev) => [...prev, { name: '', amount: '', date: '' }]);
+        setErrors((prev) => [...prev, { amount: '' }]);
     };
 
     const removeRow = (index) => {
         if (goals.length > 1) {
-            setGoals(prev => prev.filter((_, i) => i !== index));
-            setErrors(prev => prev.filter((_, i) => i !== index));
+            setGoals((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
+            setErrors((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
         }
     };
 
     useEffect(() => {
         let allValid = true;
 
-        const newErrors = goals.map(goal => {
-            const { amount, name } = goal;
+        const newErrors = goals.map((goal) => {
+            const amountError = goal.amount !== '' && !isValidNumber(goal.amount) ? 'Enter a valid number' : '';
 
-            const amountError =
-                amount !== '' && !isValidNumber(amount)
-                    ? 'Enter a valid number'
-                    : '';
-
-            if (!name || !amount || amountError) {
+            if (!goal.name || !goal.amount || amountError) {
                 allValid = false;
             }
 
@@ -60,56 +52,44 @@ const GoalPopup = ({ onClose, onUpdate }) => {
         setDisabled(!allValid);
     }, [goals, isValidNumber]);
 
-    const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-    const addedNames = [];
+        for (const goal of goals) {
+            try {
+                const response = await fetch('http://localhost:8089/goals/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        goalName: goal.name,
+                        targetAmount: parseFloat(goal.amount),
+                        targetDate: goal.date,
+                        userId: null,
+                    }),
+                });
 
-    for (const goal of goals) {
-        const amount = parseFloat(goal.amount);
+                if (response.status === 401) {
+                    navigate('/');
+                    return;
+                }
 
-        try {
-            const response = await fetch('http://localhost:8089/goals/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    goalName: goal.name,
-                    targetAmount: amount,
-                    targetDate: goal.date,
-                    userId: null
-                }),
-            });
-
-            if (response.status === 401) {
-                navigate("/");
+                if (!response.ok) throw new Error('Goal creation failed');
+                addGoalName(goal.name);
+            } catch (err) {
+                alert(`Error adding goal: ${err.message}`);
                 return;
             }
-
-            if (!response.ok) throw new Error('Goal creation failed');
-
-            addedNames.push(goal.name);
-            // refreshGoals();
-
-        } catch (err) {
-            alert('Error adding goal: ' + err.message);
-            return;
         }
-        console.log("Before:", getGoalNames());
-        addGoalName(goal.name);
+
+        alert('Goals added successfully');
+        setGoals([{ name: '', amount: '', date: '' }]);
         onUpdate(getGoalNames());
-        console.log("After:", getGoalNames());
-        // addGoalName(goal.name);
-    }
+        onClose();
+    };
 
-    
-
-    alert('Goals added successfully');
-    setGoals([{ name: '', amount: '', date: '' }]);
-    onClose();
-};
     return (
         <div className="popup-overlay">
             <div className="popup">
@@ -138,7 +118,7 @@ const GoalPopup = ({ onClose, onUpdate }) => {
                                             type="text"
                                             name="name"
                                             value={goal.name}
-                                            onChange={(e) => handleChange(index, e)}
+                                            onChange={(event) => handleChange(index, event)}
                                             required
                                         />
                                     </td>
@@ -148,7 +128,7 @@ const GoalPopup = ({ onClose, onUpdate }) => {
                                             type="text"
                                             name="amount"
                                             value={goal.amount}
-                                            onChange={(e) => handleChange(index, e)}
+                                            onChange={(event) => handleChange(index, event)}
                                             required
                                         />
                                         {errors[index].amount && (
@@ -163,7 +143,7 @@ const GoalPopup = ({ onClose, onUpdate }) => {
                                             type="date"
                                             name="date"
                                             value={goal.date}
-                                            onChange={(e) => handleChange(index, e)}
+                                            onChange={(event) => handleChange(index, event)}
                                             required
                                         />
                                     </td>

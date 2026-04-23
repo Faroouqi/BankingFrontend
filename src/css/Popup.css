@@ -1,69 +1,34 @@
-/* Overlay */
 .popup-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.45);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(7, 18, 40, 0.48);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(6px);
 }
 
-.custom-dropdown {
-    position: relative;
-    width: 100%;
-}
-
-.custom-dropdown input {
-    width: 100%;
-    padding: 8px;
-}
-
-.dropdown-list {
-    position: absolute;
-    top: 100%;   /* 👈 directly below input */
-    left: 0;
-    width: 100%;
-    max-height: 120px; /* 👈 fixed height (3 items) */
-    overflow-y: auto;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    z-index: 999; /* 👈 VERY IMPORTANT */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.dropdown-item {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.dropdown-item:hover {
-    background: #f5f5f5;
-}
-/* Popup box */
 .popup {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 24px;
     width: 90%;
-    max-width: 700px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 760px;
+    box-shadow: 0 30px 60px rgba(16, 32, 58, 0.18);
     position: relative;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
     animation: scaleIn 0.25s ease;
     overflow: hidden;
-    color: #2c3e50; /* softer text */
+    color: #2c3e50;
 }
 
-/* Header */
 .popup-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: linear-gradient(90deg, #00b894, #0984e3);
-    padding: 16px 20px;
+    background: linear-gradient(135deg, #0b2447, #1d66d2);
+    padding: 18px 22px;
     color: #fff;
 }
 
@@ -73,51 +38,54 @@
     font-weight: 600;
 }
 
+.popup > h2 {
+    margin: 24px 24px 0;
+}
+
 .close {
     cursor: pointer;
     transition: transform 0.2s;
 }
+
 .close:hover {
     transform: rotate(90deg);
 }
 
-/* Form body */
-form {
+.popup form {
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* Labels */
-label {
+.popup label {
     font-weight: 600;
     margin-bottom: 6px;
-    color: #555;   /* softer than black */
+    color: #555;
     font-size: 14px;
 }
 
-/* Inputs, selects, textarea */
-input, select, textarea {
+.popup input,
+.popup select,
+.popup textarea {
     padding: 10px 12px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 14px;
-    outline: none;
     transition: all 0.3s ease;
-    background-color: #f9f9f9;
+    background-color: #f7faff;
     color: #2c3e50;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+.popup input:focus,
+.popup select:focus,
+.popup textarea:focus {
     border-color: #00b894;
     box-shadow: 0 0 6px rgba(0, 184, 148, 0.4);
     background-color: #fff;
 }
 
-textarea {
+.popup textarea {
     resize: vertical;
     min-height: 80px;
 }
@@ -133,22 +101,51 @@ textarea {
     flex-direction: column;
 }
 
-/* Save button */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown input {
+    width: 100%;
+}
+
+.dropdown-list {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    max-height: 160px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #d7e2f2;
+    border-radius: 14px;
+    z-index: 999;
+    box-shadow: 0 12px 20px rgba(16, 32, 58, 0.12);
+}
+
+.dropdown-item {
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: #f5f8ff;
+}
+
 .btn-save {
     width: 100%;
     padding: 12px;
     font-size: 15px;
     font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: linear-gradient(90deg, #00b894, #55efc4);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1d66d2, #0fb38d);
     color: white;
     transition: all 0.3s ease;
 }
 
 .btn-save:hover:enabled {
-    background: linear-gradient(90deg, #019875, #00cec9);
+    background: linear-gradient(135deg, #154ea7, #0b9a79);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -159,34 +156,32 @@ textarea {
     cursor: not-allowed;
 }
 
-/* Error message */
 .error {
-    color: #ff6b6b;   /* softer coral red */
+    color: #ff6b6b;
     font-size: 12px;
     margin-top: 4px;
 }
 
-/* Animation */
 @keyframes scaleIn {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Budget table */
 .budget-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 15px;
 }
 
-.budget-table th, .budget-table td {
+.budget-table th,
+.budget-table td {
     padding: 8px;
     border: 1px solid #ddd;
     text-align: left;
 }
 
 .budget-table th {
-    background-color: #f2f2f2;
+    background-color: #f4f7ff;
     font-weight: 600;
 }
 
@@ -195,16 +190,14 @@ textarea {
     box-sizing: border-box;
     padding: 6px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 10px;
     font-size: 14px;
 }
 
 .budget-table button {
-    padding: 4px 8px;
+    padding: 6px 10px;
     font-size: 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    border-radius: 10px;
     background: #ff6b6b;
     color: white;
 }
@@ -219,22 +212,36 @@ textarea {
     cursor: not-allowed;
 }
 
-/* Add button */
 .btn-add {
+    width: fit-content;
     padding: 8px 16px;
     font-size: 14px;
     font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: linear-gradient(90deg, #0984e3, #74b9ff);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1d66d2, #64a4ff);
     color: white;
     transition: all 0.3s ease;
     margin-bottom: 15px;
 }
 
 .btn-add:hover {
-    background: linear-gradient(90deg, #0652dd, #0984e3);
+    background: linear-gradient(135deg, #154ea7, #1d66d2);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 720px) {
+    .popup {
+        width: calc(100% - 24px);
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .budget-table {
+        display: block;
+        overflow-x: auto;
+    }
 }

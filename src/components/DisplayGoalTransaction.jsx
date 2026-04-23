@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
-import "../css/DisplayGoal.css";
-import { getGoalNames, removeGoalName } from "./GoalStorage";
+import { useEffect, useState } from 'react';
+import '../css/DisplayGoal.css';
+import { getGoalNames, removeGoalName } from './GoalStorage';
 
 const ITEMS_PER_PAGE = 6;
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+});
 
 const DisplayGoalTransaction = ({ onUpdate }) => {
     const [goals, setGoals] = useState([]);
@@ -10,16 +15,16 @@ const DisplayGoalTransaction = ({ onUpdate }) => {
     const [error, setError] = useState(null);
     const [selectedGoal, setSelectedGoal] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [detailsView, setDetailsView] = useState('ACTIVE'); // ACTIVE / ACHIEVED
+    const [detailsView, setDetailsView] = useState('ACTIVE');
 
     useEffect(() => {
         const fetchGoals = async () => {
             try {
-                const res = await fetch("http://localhost:8089/goals/get", {
-                    credentials: "include"
+                const res = await fetch('http://localhost:8089/goals/get', {
+                    credentials: 'include',
                 });
 
-                if (!res.ok) throw new Error("Failed to fetch goals");
+                if (!res.ok) throw new Error('Failed to fetch goals');
 
                 const data = await res.json();
                 setGoals(Array.isArray(data) ? data : []);
@@ -33,45 +38,39 @@ const DisplayGoalTransaction = ({ onUpdate }) => {
         fetchGoals();
     }, []);
 
-    const handleDelete = async (goalId, goalName, e) => {
-        e.stopPropagation();
+    const handleDelete = async (goalId, goalName, event) => {
+        event.stopPropagation();
 
-        const confirmDelete = window.confirm("Delete this goal?");
+        const confirmDelete = window.confirm('Delete this goal?');
         if (!confirmDelete) return;
 
         try {
             const res = await fetch(`http://localhost:8089/goals/delete/${goalId}`, {
-                method: "DELETE",
-                credentials: "include"
+                method: 'DELETE',
+                credentials: 'include',
             });
 
-            if (!res.ok) throw new Error("Delete failed");
+            if (!res.ok) throw new Error('Delete failed');
 
-            const updated = goals.filter(g => g.id !== goalId);
-            setGoals(updated);
-            
-            setCurrentPage(1); // reset page
-
+            setGoals((prev) => prev.filter((goal) => goal.id !== goalId));
+            setCurrentPage(1);
+            removeGoalName(goalName);
+            onUpdate(getGoalNames());
         } catch (err) {
-            alert("Error deleting goal: " + err.message);
+            alert(`Error deleting goal: ${err.message}`);
         }
-        removeGoalName(goalName);
-        onUpdate(prev => prev.filter(name => name !== goalName));
-        console.log("Updated goals:", getGoalNames);
     };
 
-    const filteredGoals = goals.filter(goal =>
-        detailsView === "ACTIVE"
-            ? goal.status !== "ACHIEVED"
-            : goal.status === "ACHIEVED"
+    const filteredGoals = goals.filter((goal) =>
+        detailsView === 'ACTIVE'
+            ? goal.status !== 'ACHIEVED'
+            : goal.status === 'ACHIEVED',
     );
 
-    // ✅ Pagination
-    const totalPages = Math.ceil(filteredGoals.length / ITEMS_PER_PAGE);
-
+    const totalPages = Math.max(1, Math.ceil(filteredGoals.length / ITEMS_PER_PAGE));
     const paginatedGoals = filteredGoals.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
+        currentPage * ITEMS_PER_PAGE,
     );
 
     if (loading) return <p className="loading-text">Loading goals...</p>;
@@ -79,17 +78,21 @@ const DisplayGoalTransaction = ({ onUpdate }) => {
 
     return (
         <div className="transactions-container">
-            <h2 className="section-title">🎯 My Goals</h2>
-            <br />
+            <div className="section-header">
+                <div>
+                    <p className="section-kicker">Goals</p>
+                    <h2 className="section-title">My goals</h2>
+                </div>
+            </div>
 
-            {/* 🔥 Toggle Buttons */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <div className="view-toggle-group goals-toggle-row">
                 <button
                     className={`view-toggle ${detailsView === 'ACTIVE' ? 'active' : ''}`}
                     onClick={() => {
                         setDetailsView('ACTIVE');
                         setCurrentPage(1);
                     }}
+                    type="button"
                 >
                     Active
                 </button>
@@ -100,139 +103,112 @@ const DisplayGoalTransaction = ({ onUpdate }) => {
                         setDetailsView('ACHIEVED');
                         setCurrentPage(1);
                     }}
+                    type="button"
                 >
                     Achieved
                 </button>
             </div>
 
-            {/* 🔹 LIST VIEW */}
             {!selectedGoal ? (
                 filteredGoals.length > 0 ? (
                     <>
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(3, 1fr)",
-                                gap: "12px"
-                            }}
-                        >
-                            {paginatedGoals.map((goal, index) => (
+                        <div className="goal-grid">
+                            {paginatedGoals.map((goal) => (
                                 <div
-                                    key={index}
+                                    key={goal.id}
                                     className="goal-card"
                                     onClick={() => setSelectedGoal(goal)}
                                 >
-                                    <h3>{goal.goalName}</h3>
+                                    <div className="goal-card-header">
+                                        <h3>{goal.goalName}</h3>
+                                        <span className={goal.status === 'ACHIEVED' ? 'status-badge success' : 'status-badge'}>
+                                            {goal.status}
+                                        </span>
+                                    </div>
+                                    <p>{currencyFormatter.format(goal.savedAmount || 0)} saved</p>
 
-                                    {/* 🗑 Delete */}
                                     <button
                                         className="delete-btn"
-                                        onClick={(e) => handleDelete(goal.id,goal.goalName, e)}
+                                        onClick={(event) => handleDelete(goal.id, goal.goalName, event)}
+                                        type="button"
                                     >
-                                        🗑
+                                        Delete
                                     </button>
                                 </div>
                             ))}
                         </div>
 
-                        {/* ✅ Pagination */}
                         {totalPages > 1 && (
                             <div className="pagination">
                                 <button
                                     className="page-btn"
-                                    onClick={() => setCurrentPage(p => p - 1)}
+                                    onClick={() => setCurrentPage((page) => page - 1)}
                                     disabled={currentPage === 1}
+                                    type="button"
                                 >
-                                    ⬅ Prev
+                                    Previous
                                 </button>
 
-                                <span>
+                                <span className="page-number">
                                     {currentPage} / {totalPages}
                                 </span>
 
                                 <button
                                     className="page-btn"
-                                    onClick={() => setCurrentPage(p => p + 1)}
+                                    onClick={() => setCurrentPage((page) => page + 1)}
                                     disabled={currentPage === totalPages}
+                                    type="button"
                                 >
-                                    Next ➡
+                                    Next
                                 </button>
                             </div>
                         )}
                     </>
                 ) : (
                     <p className="no-data">
-                        No {detailsView === "ACTIVE" ? "active" : "achieved"} goals found
+                        No {detailsView === 'ACTIVE' ? 'active' : 'achieved'} goals found.
                     </p>
                 )
             ) : (
-                /* 🔹 DETAIL VIEW */
                 <div>
                     <button
-                        style={{ marginBottom: "10px" }}
+                        className="back-button"
+                        style={{ marginBottom: '14px' }}
                         onClick={() => setSelectedGoal(null)}
+                        type="button"
                     >
-                        ⬅ Back
+                        Back
                     </button>
 
                     {(() => {
-                        const goal = selectedGoal;
                         const progress = Math.min(
-                            (goal.savedAmount / goal.targetAmount) * 100,
-                            100
+                            (selectedGoal.savedAmount / selectedGoal.targetAmount) * 100,
+                            100,
                         );
 
                         return (
-                            <div
-                                className="transaction-card"
-                                style={{
-                                    padding: "16px",
-                                    borderRadius: "10px",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                                    background: "#fff"
-                                }}
-                            >
-                                <h3>{goal.goalName}</h3>
+                            <div className="goal-detail-card">
+                                <h3>{selectedGoal.goalName}</h3>
+                                <p><strong>Target:</strong> {currencyFormatter.format(selectedGoal.targetAmount)}</p>
+                                <p><strong>Saved:</strong> {currencyFormatter.format(selectedGoal.savedAmount)}</p>
 
-                                <p><strong>Target:</strong> ₹ {goal.targetAmount}</p>
-                                <p><strong>Saved:</strong> ₹ {goal.savedAmount}</p>
-
-                                {/* Progress */}
-                                <div style={{
-                                    height: "10px",
-                                    background: "#eee",
-                                    borderRadius: "5px",
-                                    overflow: "hidden",
-                                    margin: "8px 0"
-                                }}>
-                                    <div style={{
-                                        width: `${progress}%`,
-                                        background: progress === 100 ? "#2ecc71" : "#6C63FF",
-                                        height: "100%"
-                                    }} />
+                                <div className="goal-progress">
+                                    <div
+                                        className="goal-progress-bar"
+                                        style={{
+                                            width: `${progress}%`,
+                                            background: progress === 100 ? '#0fb38d' : '#1d66d2',
+                                        }}
+                                    />
                                 </div>
 
                                 <p><strong>Progress:</strong> {progress.toFixed(1)}%</p>
-
+                                <p><strong>Remaining:</strong> {currencyFormatter.format(selectedGoal.targetAmount - selectedGoal.savedAmount)}</p>
+                                <p><strong>Target Date:</strong> {new Date(selectedGoal.targetDate).toLocaleDateString()}</p>
                                 <p>
-                                    <strong>Remaining:</strong> ₹ {goal.targetAmount - goal.savedAmount}
-                                </p>
-
-                                <p>
-                                    <strong>Target Date:</strong>{" "}
-                                    {new Date(goal.targetDate).toLocaleDateString()}
-                                </p>
-
-                                <p>
-                                    <strong>Status:</strong>{" "}
-                                    <span style={{
-                                        padding: "4px 8px",
-                                        borderRadius: "6px",
-                                        background: goal.status === "ACHIEVED" ? "#e6ffed" : "#fff4e6",
-                                        color: goal.status === "ACHIEVED" ? "green" : "orange",
-                                        fontWeight: "bold"
-                                    }}>
-                                        {goal.status}
+                                    <strong>Status:</strong>{' '}
+                                    <span className={selectedGoal.status === 'ACHIEVED' ? 'status-badge success' : 'status-badge'}>
+                                        {selectedGoal.status}
                                     </span>
                                 </p>
                             </div>

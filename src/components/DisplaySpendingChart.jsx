@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import MonthlySpendingChart from "./MonthlySpendingChart";
+import { useEffect, useState } from 'react';
+import MonthlySpendingChart from './MonthlySpendingChart';
 
 const DisplaySpendingChart = () => {
     const [data, setData] = useState(null);
@@ -8,23 +8,19 @@ const DisplaySpendingChart = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const url = "http://localhost:8089/transaction/spendings";
-
-                const response = await fetch(url, {
-                    method: "GET",
-                    credentials: "include",
+                const response = await fetch('http://localhost:8089/transaction/spendings', {
+                    method: 'GET',
+                    credentials: 'include',
                 });
 
                 if (!response.ok) {
-                    const text = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+                    throw new Error(await response.text());
                 }
 
                 const result = await response.json();
                 setData(result);
-
             } catch (err) {
-                console.error("Error fetching spending data:", err);
+                console.error('Error fetching spending data:', err);
                 setError(err.message);
             }
         };
@@ -33,13 +29,16 @@ const DisplaySpendingChart = () => {
     }, []);
 
     return (
-        <div>
-            <h2>📊 Monthly Spending</h2>
+        <div className="transactions-container">
+            <div className="section-header">
+                <div>
+                    <p className="section-kicker">Spending</p>
+                    <h2 className="section-title">Monthly spending</h2>
+                </div>
+            </div>
 
-            {error && <p style={{ color: "red" }}>Error: {error}</p>}
-
-            {!data && !error && <p>Loading...</p>}
-
+            {error && <p className="error-text">Error: {error}</p>}
+            {!data && !error && <p className="no-data">Loading...</p>}
             {data && <MonthlySpendingChart data={data} />}
         </div>
     );

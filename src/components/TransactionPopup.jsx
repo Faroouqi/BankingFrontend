@@ -1,70 +1,62 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
-import { getGoalNames } from './GoalStorage';
 
-// console.log("Names in TransactionPopup:", names);
-const TransactionPopup = ({ onClose , Goals }) => {
+const TransactionPopup = ({ onClose, Goals }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         type: 'EXPENSE',
         category: '',
         amount: '',
         date: '',
-        note: ''
+        note: '',
     });
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState('');
     const [goals, setGoals] = useState(false);
     const [names, setNames] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
-    setNames(Goals || []);
-}, [Goals]);
-const isValidNumber = (str) => {
-        const num = Number(str);
-        return Number.isFinite(num);
-    };
+        setNames(Goals || []);
+    }, [Goals]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;  
-        if(name === 'type') {
+    const isValidNumber = (value) => Number.isFinite(Number(value));
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        if (name === 'type') {
             setGoals(value === 'GOAL');
         }
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
-    const [searchTerm, setSearchTerm] = useState("");
-const [showDropdown, setShowDropdown] = useState(false);
 
-const filteredGoals = names.filter(name =>
-    name.toLowerCase().includes(searchTerm.toLowerCase())
-);
+    const filteredGoals = names.filter((name) =>
+        name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
 
     useEffect(() => {
         const isAmountValid = formData.amount !== '' && isValidNumber(formData.amount);
         const hasError = formData.amount !== '' && !isAmountValid;
         const shouldDisable = !formData.amount || !formData.category || hasError;
 
-        if (error !== (hasError ? 'Enter a valid number' : '')) {
-            setError(hasError ? 'Enter a valid number' : '');
-        }
+        setError(hasError ? 'Enter a valid number' : '');
+        setDisabled(shouldDisable);
+    }, [formData]);
 
-        if (disabled !== shouldDisable) {
-            setDisabled(shouldDisable);
-        }
-    }, [formData, disabled, error]);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
         if (!isValidNumber(formData.amount)) {
-            alert("Please enter a number");
+            alert('Please enter a number');
             return;
         }
-        const amount = parseFloat(formData.amount);
+
         try {
             const response = await fetch('http://localhost:8089/transaction', {
                 method: 'POST',
@@ -73,14 +65,14 @@ const filteredGoals = names.filter(name =>
                 },
                 body: JSON.stringify({
                     ...formData,
-                    amount: amount
+                    amount: parseFloat(formData.amount),
                 }),
-                credentials: 'include'
+                credentials: 'include',
             });
 
             if (response.status === 401) {
-                console.error("User is not authorized.");
                 navigate('/');
+                return;
             }
 
             if (!response.ok) {
@@ -91,7 +83,7 @@ const filteredGoals = names.filter(name =>
             alert('Transaction added successfully');
             onClose();
         } catch (err) {
-            alert('Error adding transaction: ' + err.message);
+            alert(`Error adding transaction: ${err.message}`);
         }
     };
 
@@ -114,52 +106,49 @@ const filteredGoals = names.filter(name =>
                             </select>
                         </div>
 
-                                                                    {goals && (
-    <div className="form-group">
-        <label>Goal Name:</label>
+                        {goals ? (
+                            <div className="form-group">
+                                <label>Goal Name:</label>
+                                <div className="custom-dropdown">
+                                    <input
+                                        type="text"
+                                        placeholder="Search Goal..."
+                                        value={searchTerm}
+                                        onChange={(event) => {
+                                            setSearchTerm(event.target.value);
+                                            setShowDropdown(true);
+                                        }}
+                                        onFocus={() => setShowDropdown(true)}
+                                    />
 
-        <div className="custom-dropdown">
-            <input
-                type="text"
-                placeholder="Search Goal..."
-                value={searchTerm}
-                onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-            />
-
-            {showDropdown && searchTerm && (
-                <div className="dropdown-list">
-                    {filteredGoals.length > 0 ? (
-                        filteredGoals.map((name, index) => (
-                            <div
-                                key={index}
-                                className="dropdown-item"
-                                onClick={() => {
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        category: name
-                                    }));
-                                    setSearchTerm(name);
-                                    setShowDropdown(false);
-                                }}
-                            >
-                                {name}
+                                    {showDropdown && searchTerm && (
+                                        <div className="dropdown-list">
+                                            {filteredGoals.length > 0 ? (
+                                                filteredGoals.map((name) => (
+                                                    <div
+                                                        key={name}
+                                                        className="dropdown-item"
+                                                        onClick={() => {
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                category: name,
+                                                            }));
+                                                            setSearchTerm(name);
+                                                            setShowDropdown(false);
+                                                        }}
+                                                    >
+                                                        {name}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="dropdown-item">No match found</div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        ))
-                    ) : (
-                        <div className="no-data">No match found</div>
-                    )}
-                </div>
-            )}
-        </div>
-    </div>
-)}
-                        {
-                            !goals && (
-                                <div className="form-group">
+                        ) : (
+                            <div className="form-group">
                                 <label>Category:</label>
                                 <input
                                     type="text"
@@ -207,7 +196,7 @@ const filteredGoals = names.filter(name =>
                     </div>
 
                     <div className="form-actions">
-                        <button disabled={disabled} type="submit" className="btn-save">💾 Save</button>
+                        <button disabled={disabled} type="submit" className="btn-save">Save Transaction</button>
                     </div>
                 </form>
             </div>

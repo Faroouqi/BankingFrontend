@@ -1,16 +1,13 @@
-import { removeGoalName } from './GoalStorage';
-
-const DeleteTransaction = async (selectedTxns, setTransactions, onUpdate) => {
+const DeleteTransaction = async (selectedTxns, setTransactions) => {
     try {
         const ids = Array.from(selectedTxns);
-        console.log("Deleting IDs:", ids);
 
-        const res = await fetch("http://localhost:8089/transactions/delete", {
-            method: "DELETE",
+        const res = await fetch('http://localhost:8089/transactions/delete', {
+            method: 'DELETE',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
-            credentials: "include",
+            credentials: 'include',
             body: JSON.stringify(ids),
         });
 
@@ -19,14 +16,11 @@ const DeleteTransaction = async (selectedTxns, setTransactions, onUpdate) => {
             throw new Error(`Delete failed: ${text}`);
         }
 
-        // update UI
-        setTransactions(prev =>
-            prev.filter(txn => !selectedTxns.has(txn.id))
-        );
-        removeGoalName(ids);
-
+        setTransactions((prev) => prev.filter((txn) => !selectedTxns.has(txn.id)));
+        return true;
     } catch (err) {
         alert(err.message);
+        return false;
     }
 };
 

@@ -1,100 +1,137 @@
-/* Sidebar Container */
 .sidebar {
-    width: 280px;
-    background: linear-gradient(180deg, #fafbff 0%, #f4f7ff 50%, #ffffff 100%);
-    color: #4f6ecb;
-    padding: 22px;
-    height: calc(100vh - 60px);
     position: sticky;
-    top: 60px;
-    overflow-y: auto;
-    box-shadow: 2px 0 16px rgba(30, 41, 61, 0.12);
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    border: 1px solid rgba(106, 17, 203, 0.18);
-    backdrop-filter: blur(4px);
+    top: 104px;
+    padding: 22px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(16, 32, 58, 0.08);
+    box-shadow: 0 26px 48px rgba(20, 48, 90, 0.1);
+    backdrop-filter: blur(14px);
 }
 
-/* Sidebar Title */
-.sidebar-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #c0c8dc;
-    border-bottom: 2px solid rgba(106, 17, 203, 0.30);
-    padding-bottom: 12px;
-    letter-spacing: 0.6px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Filter Options */
-.filter-options {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 24px;
-}
-
-.filter-options label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #0f172a;
-    padding: 12px 14px;
-    border-radius: 14px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    border: 1px solid rgba(106, 17, 203, 0.26);
-    box-shadow: 0 2px 12px rgba(30, 41, 61, 0.08);
-    transition: all 0.25s ease-in-out;
-}
-
-.filter-options input[type="radio"] {
-    accent-color: #6a11cb;
-    width: 18px;
-    height: 18px;
-}
-
-.filter-options label:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 4px 16px rgba(30, 41, 61, 0.12);
-}
-
-.filter-options input[type="radio"]:checked + span {
-    color: #1a73e8;
-}
-
-.filter-options input[type="radio"]:focus-visible + span {
-    outline: 2px solid rgba(106, 17, 203, 0.6);
-    outline-offset: 2px;
-}
-
-/* Divider */
-.sidebar-divider {
-    border: none;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.3);
-    margin: 24px 0;
-}
-
-/* Finance Thought Box */
+.sidebar-section + .sidebar-section,
 .finance-thought {
-    background: rgba(255, 255, 255, 0.92);
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    line-height: 1.6;
-    font-style: italic;
-    color: #0f172a;
-    box-shadow: 0 2px 12px rgba(30, 41, 61, 0.08);
-    text-align: center;
-    border: 1px solid rgba(106, 17, 203, 0.18);
+    margin-top: 24px;
 }
 
-.finance-thought i {
-    color: #6a11cb;
+.sidebar-kicker {
+    margin: 0 0 8px;
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 1.6rem;
+    line-height: 1.1;
+}
+
+.sidebar-copy {
+    margin: 10px 0 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.sidebar-section-title {
+    margin: 0 0 14px;
+    font-size: 0.96rem;
+    color: var(--text-main);
+}
+
+.filter-options {
+    display: grid;
+    gap: 12px;
+}
+
+.filter-card {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 10px 14px;
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(244, 248, 255, 0.82);
+    border: 1px solid rgba(16, 32, 58, 0.08);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 24px rgba(29, 102, 210, 0.1);
+}
+
+.filter-card.active {
+    border-color: rgba(29, 102, 210, 0.24);
+    background: rgba(29, 102, 210, 0.08);
+}
+
+.filter-card input {
+    margin-top: 3px;
+    accent-color: var(--primary);
+}
+
+.filter-card-title {
+    display: block;
+    font-weight: 800;
+}
+
+.filter-card small {
+    grid-column: 2;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.overview-toggle-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.overview-toggle {
+    padding: 12px 10px;
+    border-radius: 16px;
+    background: rgba(244, 248, 255, 0.82);
+    border: 1px solid rgba(16, 32, 58, 0.08);
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.overview-toggle.active {
+    background: linear-gradient(135deg, #1d66d2, #0fb38d);
+    color: #ffffff;
+    box-shadow: 0 12px 22px rgba(29, 102, 210, 0.18);
+}
+
+.finance-thought {
+    padding: 18px;
+    border-radius: 22px;
+    background: linear-gradient(160deg, rgba(11, 36, 71, 0.95), rgba(29, 102, 210, 0.88));
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.finance-thought h4 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+
+.finance-thought p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 960px) {
+    .sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .overview-toggle-group {
+        grid-template-columns: 1fr;
+    }
 }

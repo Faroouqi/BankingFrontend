@@ -1,26 +1,39 @@
 .goal-card {
     position: relative;
-    padding: 14px;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 18px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(242, 247, 255, 0.9));
+    border: 1px solid rgba(16, 32, 58, 0.08);
+    box-shadow: 0 20px 32px rgba(18, 47, 89, 0.08);
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .goal-card:hover {
-    transform: scale(1.02);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 36px rgba(18, 47, 89, 0.12);
+}
+
+.goal-card h3,
+.goal-card p {
+    margin: 0;
+}
+
+.goal-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .delete-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff4d4f;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 8px;
+    right: 18px;
+    bottom: 18px;
+    padding: 8px 12px;
+    background: rgba(221, 75, 87, 0.12);
+    color: #a01f31;
+    border-radius: 12px;
     cursor: pointer;
     opacity: 0;
     transition: opacity 0.2s ease;
@@ -30,22 +43,45 @@
     opacity: 1;
 }
 
-.pagination {
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+.goal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
 }
 
-.page-btn {
-    padding: 6px 12px;
-    border: none;
-    background: #6C63FF;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
+.goals-toggle-row {
+    margin-bottom: 18px;
 }
 
-.page-btn:disabled {
-    background: #ccc;
+.goal-detail-card {
+    padding: 22px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(16, 32, 58, 0.08);
+    box-shadow: 0 24px 40px rgba(18, 47, 89, 0.1);
+}
+
+.goal-progress {
+    margin: 12px 0;
+    height: 12px;
+    background: rgba(16, 32, 58, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.goal-progress-bar {
+    height: 100%;
+    border-radius: inherit;
+}
+
+@media (max-width: 1100px) {
+    .goal-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .goal-grid {
+        grid-template-columns: 1fr;
+    }
 }
