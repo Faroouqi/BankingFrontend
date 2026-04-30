@@ -35,7 +35,8 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
     const [selectedTxns, setSelectedTxns] = useState(new Set());
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
-
+    const [products, setProducts] = useState([]);
+    const [searchVal, setSearchVal] = useState("");
     useEffect(() => {
         const fetchBudgets = async () => {
             try {
@@ -93,6 +94,7 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
 
                 const result = await response.json();
                 setTransactions(Array.isArray(result) ? result : []);
+                setProducts(transactions);
 
                 if (filter === '1') {
                     setViewMode('details');
@@ -115,6 +117,16 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
         fetchTransactions();
     }, [currentMonthNumber, filter]);
 
+    function handleSearchClick() {
+        setProducts(paginatedTransactions);
+        console.log(searchVal);
+        if (searchVal === "") { setProducts(products); return; }
+        const filterBySearch = products.filter((item) => {
+            if (item.category.toLowerCase()
+                .includes(searchVal.toLowerCase())) { return item; }
+        })
+        setProducts(filterBySearch);
+    }
     const filteredTransactions = useMemo(
         () =>
             transactions.filter((transaction) => {
@@ -221,11 +233,23 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
         return Object.entries(grouped).sort((a, b) => b[1] - a[1]);
     }, [filteredTransactions]);
 
-    const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE));
-    const paginatedTransactions = filteredTransactions.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE,
+    const searchedTransactions = useMemo(() => {
+    if (!searchVal.trim()) return filteredTransactions;
+    return filteredTransactions.filter(item =>
+        item.category?.toLowerCase().includes(searchVal.toLowerCase())
     );
+}, [filteredTransactions, searchVal]);
+
+    const totalPages = Math.max(1, Math.ceil(searchedTransactions.length / ITEMS_PER_PAGE));
+const paginatedTransactions = searchedTransactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+);
+    // const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE));
+    // const paginatedTransactions = filteredTransactions.slice(
+    //     (currentPage - 1) * ITEMS_PER_PAGE,
+    //     currentPage * ITEMS_PER_PAGE,
+    // );
 
     const summaryMetrics = useMemo(() => ({
         totalSpent: groupedTransactions.reduce((sum, item) => sum + item.expense, 0),
@@ -419,6 +443,11 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
                     <button className={detailsView === 'insights' ? 'view-toggle active' : 'view-toggle'} onClick={() => setDetailsView('insights')} type="button">
                         Insights
                     </button>
+                    <input
+  onChange={e => setSearchVal(e.target.value)}
+  onKeyDown={e => e.key === "Enter" && handleSearchClick()}
+/>
+                {/* <BsSearch  /> */}
                 </div>
 
                 {selectionMode && selectedTxns.size > 0 && (

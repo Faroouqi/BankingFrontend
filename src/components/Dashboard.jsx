@@ -35,7 +35,6 @@ const Dashboard = () => {
 
             <div className="main-section">
                 <Sidebar handleFilterChange={handleFilterChange} />
-                console.log('Current filter :', filter) {/* Debugging statement */}
                 <main className="content-area">
                     <DisplayTransaction filter={filter} onUpdate={refreshGoals} />
                 </main>
