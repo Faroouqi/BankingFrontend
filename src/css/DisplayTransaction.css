@@ -308,7 +308,13 @@
 .error-text {
     color: #9f1c2e;
 }
-
+#searchForm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 620px;
+    border: #156950;
+}
 @media (max-width: 1100px) {
     .stat-grid,
     .summary-grid,

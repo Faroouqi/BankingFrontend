@@ -443,10 +443,17 @@ const paginatedTransactions = searchedTransactions.slice(
                     <button className={detailsView === 'insights' ? 'view-toggle active' : 'view-toggle'} onClick={() => setDetailsView('insights')} type="button">
                         Insights
                     </button>
-                    <input
-  onChange={e => setSearchVal(e.target.value)}
-  onKeyDown={e => e.key === "Enter" && handleSearchClick()}
-/>
+                            {detailsView === 'table' && (
+                                <form className="d-flex" role="search" id="searchForm">
+                                    <input
+                                        className="form-control me-2 border border-dark"
+                                        type="search"
+                                        placeholder="Search"
+                                        aria-label="Search"
+    onChange={e => setSearchVal(e.target.value)}
+    onKeyDown={e => e.key === "Enter" && handleSearchClick()}
+  />
+</form>)}
                 {/* <BsSearch  /> */}
                 </div>
 
