@@ -1,231 +1,441 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaBullseye, FaChartLine, FaEye, FaEyeSlash, FaShieldAlt, FaWallet } from 'react-icons/fa';
 import '../css/Login.css';
 
+const API_BASE = 'http://localhost:8089';
+
 const Login = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({ username: '', email: '', password: '' });
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isActive, setIsActive] = useState(false);
     const [otp, setOtp] = useState('');
     const [showOtp, setShowOtp] = useState(false);
-    const [loading, setLoading] = useState(false);   // ⚡ NEW
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotForm, setForgotForm] = useState({ username: '', newPassword: '' });
     const [forgotError, setForgotError] = useState('');
     const [forgotSuccess, setForgotSuccess] = useState('');
-    const [forgotLoading, setForgotLoading] = useState(false);
 
-    const handleForgotChange = (e) => {
-        setForgotForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
-
-    const handleForgotSubmit = async (e) => {
-        e.preventDefault();
+    const resetAuthMessages = () => {
+        setError('');
         setForgotError('');
         setForgotSuccess('');
-        setForgotLoading(true);
+    };
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleForgotChange = (event) => {
+        const { name, value } = event.target;
+        setForgotForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        resetAuthMessages();
+
+        const body = new URLSearchParams();
+        body.append('username', formData.username);
+        body.append('password', formData.password);
+
         try {
-            const res = await fetch('http://localhost:8089/reset-password', {
+            const response = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                setError('Invalid email or password.');
+                return;
+            }
+
+            navigate('/dashboard');
+        } catch {
+            setError('Unable to connect to the server right now.');
+        }
+    };
+
+    const handleRegister = async (event) => {
+        event.preventDefault();
+        resetAuthMessages();
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE}/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email }),
+            });
+
+            if (!response.ok) {
+                setError(await response.text());
+                return;
+            }
+
+            setShowOtp(true);
+        } catch {
+            setError('Unable to send OTP right now. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async (event) => {
+        event.preventDefault();
+        resetAuthMessages();
+        setLoading(true);
+
+        try {
+            const verifyResponse = await fetch(`${API_BASE}/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: formData.email,
+                    otp,
+                }),
+            });
+
+            if (!verifyResponse.ok) {
+                setError('Invalid or expired OTP.');
+                return;
+            }
+
+            const registerResponse = await fetch(`${API_BASE}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                }),
+                credentials: 'include',
+            });
+
+            if (!registerResponse.ok) {
+                setError(await registerResponse.text());
+                return;
+            }
+
+            setShowOtp(false);
+            setOtp('');
+            setIsActive(false);
+            setForgotSuccess('Account created successfully. Please sign in.');
+        } catch {
+            setError('Something went wrong during verification.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleForgotSubmit = async (event) => {
+        event.preventDefault();
+        setForgotError('');
+        setForgotSuccess('');
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE}/reset-password`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(forgotForm),
             });
-            if (res.ok) {
-                setForgotSuccess('Password reset successful! Please login with your new password.');
-                setShowForgotPassword(false);
-                setForgotForm({ username: '', newPassword: '' });
-            } else {
-                const errorMsg = await res.text();
-                setForgotError(errorMsg);
+
+            if (!response.ok) {
+                setForgotError(await response.text());
+                return;
             }
+
+            setForgotSuccess('Password reset successful. You can sign in now.');
+            setForgotForm({ username: '', newPassword: '' });
+            setShowForgotPassword(false);
         } catch {
-            setForgotError('Something went wrong. Try again.');
+            setForgotError('Unable to reset password right now.');
         } finally {
-            setForgotLoading(false);
+            setLoading(false);
         }
     };
 
-
-    const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
-
-    const handleSubmit = async (e) => { e.preventDefault(); setError(''); const body = new URLSearchParams(); body.append('username', formData.username); body.append('password', formData.password); try { const res = await fetch('http://localhost:8089/login', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString(), credentials: 'include', }); if (res.ok) {
-        console.log(res);
-        navigate('/dashboard'); } else { setError('Invalid username or password'); } } catch { setError('Something went wrong. Try again.'); } };
-
-    // ---------------- REGISTER ----------------
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        setError("");
-        setLoading(true);  // ⚡ show loading
-
-        try {
-            const res = await fetch("http://localhost:8089/send-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: formData.email }),
-            });
-
-            if (res.ok) {
-                setShowOtp(true);
-                alert("We have sent an OTP to your email. Please verify.");
-            } else {
-                const errorMsg = await res.text();
-                setError(errorMsg);
-            }
-        } catch {
-            setError("Something went wrong. Try again.");
-        } finally {
-            setLoading(false);  // ⚡ hide loading
-        }
-    };
-
-    // ---------------- VERIFY OTP ----------------
-    const handleVerifyOtp = async (e) => {
-        e.preventDefault();
-        setLoading(true); // ⚡ start loading
-        try {
-            const res = await fetch("http://localhost:8089/verify-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: formData.email,
-                    otp: otp,
-                }),
-            });
-
-            if (res.ok) {
-                alert("✅ Email verified successfully! You can now log in.");
-                const response = await fetch("http://localhost:8089/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        username: formData.username,
-                        email: formData.email,
-                        password: formData.password,
-                    }),
-                    credentials: "include",
-                });
-                if(response.ok) {
-                    setIsActive(false);
-                    setShowOtp(false);
-                } else {
-                    const errorMsg = await response.text();
-                    setError(errorMsg);
-                }
-            } else {
-                setError("Invalid or expired OTP");
-            }
-        } catch {
-            setError("Something went wrong. Try again.");
-        } finally {
-            setLoading(false); // ⚡ stop loading
-        }
+    const switchMode = (nextActive) => {
+        setIsActive(nextActive);
+        setShowOtp(false);
+        setOtp('');
+        setShowForgotPassword(false);
+        resetAuthMessages();
     };
 
     return (
-        <div className={`container ${isActive ? "active" : ""}`}>
-            {/* Sign Up Form */}
-            <div className="form-container sign-up">
-                <form onSubmit={showOtp ? handleVerifyOtp : handleRegister}>
-                    <h1>{showOtp ? "Verify OTP" : "Create Account"}</h1>
-                    {error && <p className="error">{error}</p>}
+        <div className="auth-shell">
+            <div className="auth-backdrop" />
+            <div className="auth-layout">
+                <aside className="auth-showcase">
+                    <div className="auth-brand-pill">Finance Manager</div>
+                    <h1>Track money with clarity, not clutter.</h1>
+                    <p>
+                        A cleaner dashboard for budgets, goals, savings, and smarter financial
+                        decisions.
+                    </p>
 
-                    {!showOtp && (
-                        <>
-                            <input type="text" name="username" placeholder="Name"
-                                   value={formData.username} onChange={handleChange} required />
-                            <input type="email" name="email" placeholder="Email"
-                                   value={formData.email} onChange={handleChange} required />
-                            <input type="password" name="password" placeholder="Password"
-                                   value={formData.password} onChange={handleChange} required />
-                        </>
-                    )}
-
-                    {showOtp && (
-                        <input type="text" name="otp" placeholder="Enter OTP"
-                               value={otp} onChange={(e) => setOtp(e.target.value)} required />
-                    )}
-
-                    <button type="submit" disabled={loading}>
-                        {loading ? "⏳ Sending..." : (showOtp ? "Verify OTP" : "Sign Up")}
-                    </button>
-
-                    {showOtp && (
-                        <button type="button" onClick={() => setShowOtp(false)}>
-                            Back
-                        </button>
-                    )}
-                </form>
-            </div>
-
-            {/* Sign In Form (unchanged) */}
-            <div className="form-container sign-in">
-                { !showForgotPassword ? (
-                    // Sign In Form
-                    <form onSubmit={handleSubmit}>
-                        <h1>Sign In</h1>
-                        {error && <p className="error">{error}</p>}
-                        <input type="email" name="username" placeholder="Email"
-                               value={formData.username} onChange={handleChange} required />
-                        <div className="form-group">
-                            <input type={showPassword ? "text" : "password"}
-                                   name="password" placeholder="Password"
-                                   value={formData.password} onChange={handleChange} required />
+                    <div className="auth-feature-list">
+                        <div className="auth-feature-card">
+                            <FaWallet />
+                            <div>
+                                <strong>Cash flow visibility</strong>
+                                <span>Monitor income, expenses, and monthly balance in one place.</span>
+                            </div>
                         </div>
-                        <div className="Forget-password">
-                            <a href="#" onClick={() => setShowForgotPassword(true)}>Forget Your Password?</a>
-                            <button type="submit">Sign In</button>
+                        <div className="auth-feature-card">
+                            <FaBullseye />
+                            <div>
+                                <strong>Goal-first planning</strong>
+                                <span>Set savings targets and track progress month by month.</span>
+                            </div>
                         </div>
-                    </form>
-                ) : (
-                    // Forgot Password Form
-                    <form onSubmit={handleForgotSubmit} className="forgot-password-form">
-                        {forgotError && <p className="error">{forgotError}</p>}
-                        {forgotSuccess && <p className="success">{forgotSuccess}</p>}
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Enter your username"
-                            value={forgotForm.username}
-                            onChange={handleForgotChange}
-                            required
-                        />
-                        <input
-                            type="password"
-                            name="newPassword"
-                            placeholder="Enter your new password"
-                            value={forgotForm.newPassword}
-                            onChange={handleForgotChange}
-                            required
-                        />
-                        <button type="submit" disabled={forgotLoading}>
-                            {forgotLoading ? "Resetting..." : "Reset Password"}
-                        </button>
-                        <button type="button" onClick={() => setShowForgotPassword(false)}>
-                            Cancel
-                        </button>
-                    </form>
-                )}
-            </div>
+                        <div className="auth-feature-card">
+                            <FaChartLine />
+                            <div>
+                                <strong>Better insights</strong>
+                                <span>Spot spending patterns quickly with charts and summaries.</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
 
-            {/* Toggle Panel (unchanged) */}
-            <div className="toggle-container">
-                <div className="toggle">
-                    <div className="toggle-panel toggle-left">
-                        <h1>Welcome Back!</h1>
-                        <p>Enter your personal details to use all of site features</p>
-                        <button className="hidden" onClick={() => setIsActive(false)}>Sign In</button>
+                <section className="auth-panel">
+                    <div className="auth-panel-header">
+                        <div>
+                            <span className="auth-eyebrow">
+                                <FaShieldAlt /> Secure access
+                            </span>
+                            <h2>{isActive ? 'Create your account' : 'Welcome back'}</h2>
+                            <p>
+                                {isActive
+                                    ? 'Start with your email and verify it using OTP.'
+                                    : 'Sign in to continue managing your finances.'}
+                            </p>
+                        </div>
+
+                        <div className="auth-mode-toggle">
+                            <button
+                                type="button"
+                                className={!isActive ? 'active' : ''}
+                                onClick={() => switchMode(false)}
+                            >
+                                Sign In
+                            </button>
+                            <button
+                                type="button"
+                                className={isActive ? 'active' : ''}
+                                onClick={() => switchMode(true)}
+                            >
+                                Sign Up
+                            </button>
+                        </div>
                     </div>
-                    <div className="toggle-panel toggle-right">
-                        <h1>Hello, Friend!</h1>
-                        <p>Register with your personal details to use all of site features</p>
-                        <button className="hidden" onClick={() => setIsActive(true)}>Sign Up</button>
-                    </div>
-                </div>
+
+                    {!isActive && !showForgotPassword && forgotSuccess && (
+                        <p className="auth-message success">{forgotSuccess}</p>
+                    )}
+
+                    {!isActive ? (
+                        showForgotPassword ? (
+                            <form className="auth-form" onSubmit={handleForgotSubmit}>
+                                <div className="auth-field">
+                                    <label htmlFor="forgot-username">Username</label>
+                                    <input
+                                        id="forgot-username"
+                                        type="text"
+                                        name="username"
+                                        placeholder="Enter your username"
+                                        value={forgotForm.username}
+                                        onChange={handleForgotChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="auth-field">
+                                    <label htmlFor="forgot-password">New Password</label>
+                                    <input
+                                        id="forgot-password"
+                                        type="password"
+                                        name="newPassword"
+                                        placeholder="Enter a new password"
+                                        value={forgotForm.newPassword}
+                                        onChange={handleForgotChange}
+                                        required
+                                    />
+                                </div>
+
+                                {forgotError && <p className="auth-message error">{forgotError}</p>}
+
+                                <div className="auth-actions">
+                                    <button className="auth-primary-btn" type="submit" disabled={loading}>
+                                        {loading ? 'Resetting...' : 'Reset Password'}
+                                    </button>
+                                    <button
+                                        className="auth-secondary-btn"
+                                        type="button"
+                                        onClick={() => {
+                                            setShowForgotPassword(false);
+                                            setForgotError('');
+                                        }}
+                                    >
+                                        Back to Sign In
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <form className="auth-form" onSubmit={handleSubmit}>
+                                <div className="auth-field">
+                                    <label htmlFor="login-email">Email</label>
+                                    <input
+                                        id="login-email"
+                                        type="email"
+                                        name="username"
+                                        placeholder="you@example.com"
+                                        value={formData.username}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="auth-field">
+                                    <label htmlFor="login-password">Password</label>
+                                    <div className="auth-password-wrap">
+                                        <input
+                                            id="login-password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            name="password"
+                                            placeholder="Enter your password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="auth-password-toggle"
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                        >
+                                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {error && <p className="auth-message error">{error}</p>}
+
+                                <div className="auth-inline-actions">
+                                    <button
+                                        type="button"
+                                        className="auth-text-btn"
+                                        onClick={() => {
+                                            setShowForgotPassword(true);
+                                            setError('');
+                                        }}
+                                    >
+                                        Forgot password?
+                                    </button>
+                                    <button className="auth-primary-btn" type="submit">
+                                        Sign In
+                                    </button>
+                                </div>
+                            </form>
+                        )
+                    ) : (
+                        <form className="auth-form" onSubmit={showOtp ? handleVerifyOtp : handleRegister}>
+                            {!showOtp ? (
+                                <>
+                                    <div className="auth-field">
+                                        <label htmlFor="register-name">Name</label>
+                                        <input
+                                            id="register-name"
+                                            type="text"
+                                            name="username"
+                                            placeholder="Your full name"
+                                            value={formData.username}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="auth-field">
+                                        <label htmlFor="register-email">Email</label>
+                                        <input
+                                            id="register-email"
+                                            type="email"
+                                            name="email"
+                                            placeholder="you@example.com"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="auth-field">
+                                        <label htmlFor="register-password">Password</label>
+                                        <input
+                                            id="register-password"
+                                            type="password"
+                                            name="password"
+                                            placeholder="Create a strong password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="auth-field">
+                                    <label htmlFor="register-otp">OTP Verification Code</label>
+                                    <input
+                                        id="register-otp"
+                                        type="text"
+                                        name="otp"
+                                        placeholder="Enter the OTP sent to your email"
+                                        value={otp}
+                                        onChange={(event) => setOtp(event.target.value)}
+                                        required
+                                    />
+                                </div>
+                            )}
+
+                            {showOtp && (
+                                <div className="auth-otp-note">
+                                    We sent a verification code to <strong>{formData.email}</strong>.
+                                </div>
+                            )}
+
+                            {error && <p className="auth-message error">{error}</p>}
+
+                            <div className="auth-actions">
+                                <button className="auth-primary-btn" type="submit" disabled={loading}>
+                                    {loading
+                                        ? showOtp
+                                            ? 'Verifying...'
+                                            : 'Sending OTP...'
+                                        : showOtp
+                                        ? 'Verify OTP'
+                                        : 'Continue'}
+                                </button>
+                                {showOtp && (
+                                    <button
+                                        className="auth-secondary-btn"
+                                        type="button"
+                                        onClick={() => setShowOtp(false)}
+                                    >
+                                        Back
+                                    </button>
+                                )}
+                            </div>
+                        </form>
+                    )}
+                </section>
             </div>
         </div>
     );

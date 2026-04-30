@@ -1,54 +1,62 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 
-const TransactionPopup = ({ onClose }) => {
+const TransactionPopup = ({ onClose, Goals }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         type: 'EXPENSE',
         category: '',
         amount: '',
         date: '',
-        note: ''
+        note: '',
     });
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState('');
+    const [goals, setGoals] = useState(false);
+    const [names, setNames] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
 
-    const isValidNumber = (str) => {
-        const num = Number(str);
-        return Number.isFinite(num);
-    };
+    useEffect(() => {
+        setNames(Goals || []);
+    }, [Goals]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
+    const isValidNumber = (value) => Number.isFinite(Number(value));
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        if (name === 'type') {
+            setGoals(value === 'GOAL');
+        }
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
+
+    const filteredGoals = names.filter((name) =>
+        name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
 
     useEffect(() => {
         const isAmountValid = formData.amount !== '' && isValidNumber(formData.amount);
         const hasError = formData.amount !== '' && !isAmountValid;
         const shouldDisable = !formData.amount || !formData.category || hasError;
 
-        if (error !== (hasError ? 'Enter a valid number' : '')) {
-            setError(hasError ? 'Enter a valid number' : '');
-        }
+        setError(hasError ? 'Enter a valid number' : '');
+        setDisabled(shouldDisable);
+    }, [formData]);
 
-        if (disabled !== shouldDisable) {
-            setDisabled(shouldDisable);
-        }
-    }, [formData, disabled, error]);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
         if (!isValidNumber(formData.amount)) {
-            alert("Please enter a number");
+            alert('Please enter a number');
             return;
         }
-        const amount = parseFloat(formData.amount);
+
         try {
             const response = await fetch('http://localhost:8089/transaction', {
                 method: 'POST',
@@ -57,14 +65,14 @@ const TransactionPopup = ({ onClose }) => {
                 },
                 body: JSON.stringify({
                     ...formData,
-                    amount: amount
+                    amount: parseFloat(formData.amount),
                 }),
-                credentials: 'include'
+                credentials: 'include',
             });
 
             if (response.status === 401) {
-                console.error("User is not authorized.");
                 navigate('/');
+                return;
             }
 
             if (!response.ok) {
@@ -75,7 +83,7 @@ const TransactionPopup = ({ onClose }) => {
             alert('Transaction added successfully');
             onClose();
         } catch (err) {
-            alert('Error adding transaction: ' + err.message);
+            alert(`Error adding transaction: ${err.message}`);
         }
     };
 
@@ -94,19 +102,63 @@ const TransactionPopup = ({ onClose }) => {
                             <select name="type" value={formData.type} onChange={handleChange}>
                                 <option value="EXPENSE">Expense</option>
                                 <option value="INCOME">Income</option>
+                                <option value="GOAL">Goal</option>
                             </select>
                         </div>
 
-                        <div className="form-group">
-                            <label>Category:</label>
-                            <input
-                                type="text"
-                                name="category"
-                                value={formData.category}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+                        {goals ? (
+                            <div className="form-group">
+                                <label>Goal Name:</label>
+                                <div className="custom-dropdown">
+                                    <input
+                                        type="text"
+                                        placeholder="Search Goal..."
+                                        value={searchTerm}
+                                        onChange={(event) => {
+                                            setSearchTerm(event.target.value);
+                                            setShowDropdown(true);
+                                        }}
+                                        onFocus={() => setShowDropdown(true)}
+                                    />
+
+                                    {showDropdown && searchTerm && (
+                                        <div className="dropdown-list">
+                                            {filteredGoals.length > 0 ? (
+                                                filteredGoals.map((name) => (
+                                                    <div
+                                                        key={name}
+                                                        className="dropdown-item"
+                                                        onClick={() => {
+                                                            setFormData((prev) => ({
+                                                                ...prev,
+                                                                category: name,
+                                                            }));
+                                                            setSearchTerm(name);
+                                                            setShowDropdown(false);
+                                                        }}
+                                                    >
+                                                        {name}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="dropdown-item">No match found</div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="form-group">
+                                <label>Category:</label>
+                                <input
+                                    type="text"
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-row">
@@ -144,7 +196,7 @@ const TransactionPopup = ({ onClose }) => {
                     </div>
 
                     <div className="form-actions">
-                        <button disabled={disabled} type="submit" className="btn-save">💾 Save</button>
+                        <button disabled={disabled} type="submit" className="btn-save">Save Transaction</button>
                     </div>
                 </form>
             </div>

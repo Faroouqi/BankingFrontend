@@ -1,0 +1,38 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Stop existing frontend container
+        run: docker stop finance-frontend || true && docker rm finance-frontend || true
+
+      - name: Remove old frontend image
+        run: docker image rm finance-frontend || true
+
+      - name: Ensure network exists
+        run: docker network inspect finance-network >/dev/null 2>&1 || docker network create finance-network
+
+      - name: Build frontend image
+        run: docker build -t finance-frontend .
+
+      - name: Run frontend container
+        run: |
+          docker run -d \
+            --name finance-frontend \
+            --network finance-network \
+            --restart always \
+            -p 5173:80 \
+            finance-frontend
+
+      - name: Verify frontend running
+        run: docker ps | grep finance-frontend

@@ -1,33 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import '../css/Navbar.css';
 import { useNavigate } from 'react-router-dom';
+import { FaArrowRightFromBracket, FaBullseye, FaPlus, FaWallet } from 'react-icons/fa6';
+import { HiOutlineCreditCard } from 'react-icons/hi2';
 import TransactionPopup from './TransactionPopup';
 import BudgetPopup from './BudgetPopup';
+import GoalPopup from './GoalPopup';
 
-const Navbar = ({ totalBalance = 50000 }) => {
+const Navbar = ({ totalBalance = 50000, onUpdate, Goals }) => {
     const navigate = useNavigate();
+    const profileRef = useRef(null);
     const [popupType, setPopupType] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [userName, setUserName] = useState('');
 
-    const handleMe = async () => {
-        try {
-            const response = await fetch("http://localhost:8089/me", {
-                method: "GET",
-                credentials: "include",
-            });
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await fetch('http://localhost:8089/me', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
 
-            if (!response.ok) {
-                throw new Error("Not logged in");
+                if (!response.ok) {
+                    throw new Error('Not logged in');
+                }
+
+                setUserName(await response.text());
+            } catch (error) {
+                console.error('Error fetching current user:', error);
             }
+        };
 
-            const data = await response.text();
-            console.log(data);// backend returns just username as plain text
-            setUserName(data);
-        } catch (error) {
-            console.error("Error fetching current user:", error);
-        }
-    };
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, []);
+
+    const initials = useMemo(() => {
+        const name = userName.trim();
+        if (!name) return 'FM';
+        return name
+            .split(' ')
+            .slice(0, 2)
+            .map((part) => part[0]?.toUpperCase())
+            .join('');
+    }, [userName]);
 
     const handleLogout = async () => {
         try {
@@ -35,8 +62,9 @@ const Navbar = ({ totalBalance = 50000 }) => {
                 method: 'GET',
                 credentials: 'include',
             });
+
             if (response.ok) {
-                navigate("/");
+                navigate('/');
             }
         } catch (error) {
             console.error(error);
@@ -45,57 +73,68 @@ const Navbar = ({ totalBalance = 50000 }) => {
 
     const closePopup = () => setPopupType(null);
 
-    // 🔥 Call handleMe on component mount
-    useEffect(() => {
-        handleMe();
-    }, []);
-
     return (
         <>
-            <nav className={`navbar ${popupType ? 'blurred' : ''}`}>
-                {/* Logo */}
-                <div className="logo">💰 Finance Manager</div>
-
-                {/* Center menu */}
-                <div className="navbar-center">
-                    <div className="tooltip-container">
-                        <span className="nav-btn" onClick={() => setPopupType('transaction')}>
-                             Transaction
-                        </span>
-                        <span className="tooltip-text">Add new transaction</span>
+            <nav className="navbar">
+                <div className="navbar-brand">
+                    <div className="navbar-brand-icon">
+                        <FaWallet />
                     </div>
-                    <div className="tooltip-container">
-                        <span className="nav-btn" onClick={() => setPopupType('budget')}>
-                             Budget
-                        </span>
-                        <span className="tooltip-text">Set monthly budget</span>
+                    <div>
+                        <strong>Finance Manager</strong>
+                        <span>Budget smarter every month</span>
                     </div>
                 </div>
 
-                {/* Right section */}
+                <div className="navbar-center">
+                    <button className="navbar-action" onClick={() => setPopupType('transaction')} type="button">
+                        <HiOutlineCreditCard />
+                        <span>Add Transaction</span>
+                    </button>
+                    <button className="navbar-action" onClick={() => setPopupType('budget')} type="button">
+                        <FaPlus />
+                        <span>New Budget</span>
+                    </button>
+                    <button className="navbar-action" onClick={() => setPopupType('goal')} type="button">
+                        <FaBullseye />
+                        <span>Add Goal</span>
+                    </button>
+                </div>
+
                 <div className="navbar-right">
-                    <h4 className="balance">₹ {totalBalance.toLocaleString()}</h4>
-                    <div
-                        className="profile"
-                        onClick={() => setShowDropdown(!showDropdown)}
-                    >
-                        <img
-                            src={`https://ui-avatars.com/api/?name=${userName || 'User'}&background=00b894&color=fff`}
-                            alt="avatar"
-                            className="avatar"
-                        />
+                    <div className="balance-pill">
+                        <span>Total Balance</span>
+                        <strong>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(totalBalance)}</strong>
+                    </div>
+
+                    <div className="profile" ref={profileRef}>
+                        <button
+                            className="profile-trigger"
+                            type="button"
+                            onClick={() => setShowDropdown((prev) => !prev)}
+                        >
+                            <div className="avatar">{initials}</div>
+                        </button>
+
                         {showDropdown && (
                             <div className="dropdown">
-                                <div>{userName}</div>
-                                <div onClick={handleLogout}>Logout</div>
+                                <div className="dropdown-user">
+                                    <strong>{userName || 'Finance User'}</strong>
+                                    <span>Manage your account</span>
+                                </div>
+                                <button className="dropdown-item" onClick={handleLogout} type="button">
+                                    <FaArrowRightFromBracket />
+                                    <span>Logout</span>
+                                </button>
                             </div>
                         )}
                     </div>
                 </div>
             </nav>
 
-            {popupType === 'transaction' && <TransactionPopup onClose={closePopup} />}
+            {popupType === 'transaction' && <TransactionPopup onClose={closePopup} Goals={Goals} />}
             {popupType === 'budget' && <BudgetPopup onClose={closePopup} />}
+            {popupType === 'goal' && <GoalPopup onClose={closePopup} onUpdate={onUpdate} />}
         </>
     );
 };

@@ -1,16 +1,3 @@
-import React from "react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+const Toast = () => null;
 
-toast.configure();
-
-function GeeksforGeeks({message}) {
-    const notify = () => {
-        toast(message);
-    };
-    return (
-        <></>
-    );
-}
-
-export default GeeksforGeeks;
+export default Toast;

@@ -1,42 +1,44 @@
-// Dashboard.jsx
-import React, {useState} from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
-import '../css/Dashboard.css'
-import DisplayTransaction from "./DisplayTransaction.jsx";
+import '../css/Dashboard.css';
+import DisplayTransaction from './DisplayTransaction.jsx';
+import { getGoalNames } from './GoalStorage';
+
+const filterMap = {
+    'current-month': '1',
+    'last-year': '2',
+    'last-6-months': '3',
+    goals: '4',
+    spendings: '5',
+    savings: '6',
+};
 
 const Dashboard = () => {
-    const [filter, setFilter] = useState('');
-    const [transactions, setTransactions] = useState([]);
-    const handleFilterChange = (e) => {
-        if(e.target.value === "current-month")
-        {
-            console.log("current-month");
-            setFilter("1");
-        }
-        if(e.target.value === "last-year")
-        {
-            console.log("last-year");
-            setFilter("2");
-        }
-        if(e.target.value === "last-6-months")
-        {
-            console.log("6 months");
-            setFilter("3");
-        }
+    const [filter, setFilter] = useState('1');
+    const [goalNames, setGoalNames] = useState(getGoalNames());
 
-    }
+    const handleFilterChange = (event) => {
+        const nextFilter = filterMap[event.target.value];
+        if (nextFilter) {
+            setFilter(nextFilter);
+        }
+    };
+
+    const refreshGoals = (newValues) => {
+        setGoalNames(Array.isArray(newValues) ? newValues : getGoalNames());
+    };
+
     return (
         <div className="dashboard-container">
-            <Navbar totalBalance={120000} />
+            <Navbar totalBalance={120000} onUpdate={refreshGoals} Goals={goalNames} />
+
             <div className="main-section">
                 <Sidebar handleFilterChange={handleFilterChange} />
-                <div className="content-area">
-                    <DisplayTransaction filter={filter} />
-                </div>
+                <main className="content-area">
+                    <DisplayTransaction filter={filter} onUpdate={refreshGoals} />
+                </main>
             </div>
-
         </div>
     );
 };

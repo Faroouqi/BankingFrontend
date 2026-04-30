@@ -1,52 +1,33 @@
-/* Entire dashboard */
 .dashboard-container {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(29, 102, 210, 0.12), transparent 26%),
+        linear-gradient(180deg, #f8fbff 0%, #edf4ff 100%);
+}
+
+.main-section {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 24px;
+    padding: 104px 24px 24px;
+    align-items: start;
+    margin-top: 25px;
+}
+
+.content-area {
+    min-width: 0;
+    min-height: calc(100vh - 128px);
     display: flex;
     flex-direction: column;
-    height: 100vh; /* exactly full screen */
-    overflow: hidden; /* no page scroll */
-    background: #f0f4f8;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Navbar */
-.navbar {
-    height: 60px;
-    background: linear-gradient(135deg, #2d3436, #636e72);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    flex-shrink: 0;
-}
+@media (max-width: 960px) {
+    .main-section {
+        grid-template-columns: 1fr;
+        padding: 112px 16px 16px;
+    }
 
-/* Main section (below navbar) */
-.main-section {
-    display: flex;
-    flex: 1;
-    width: 100%;
-    overflow: hidden; /* no scroll inside */
-}
-
-/* Sidebar */
-.sidebar {
-    width: 350px;
-    background: linear-gradient(180deg, #2d3436, #636e72);
-    padding: 20px;
-    color: #f1f1f1;
-    flex-shrink: 0;
-    overflow-y: auto; /* allow only sidebar to scroll if needed */
-}
-
-/* Content area */
-.content-area {
-    padding: 20px;
-    background: #f8fafc;
-    margin-top: 40px;
-    align-items: center;
-    height: calc(100vh - 50px);
-    width: 800px;/* take rest of screen below navbar */
-    overflow-y: auto;
-    margin-left: 150px/* allow only this section to scroll if needed */
+    .content-area {
+        min-height: auto;
+    }
 }
