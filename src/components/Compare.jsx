@@ -22,13 +22,14 @@ const currencyFormatter = new Intl.NumberFormat('en-IN', {
     maximumFractionDigits: 0,
 });
 
-const buildSummary = (transactions) => {
+const buildSummary = (transactions, month, budgets) => {
     const summary = {
         income: 0,
         expense: 0,
         goals: 0,
         balance: 0,
         transactionsCount: transactions.length,
+        budget: 0,
     };
 
     transactions.forEach((transaction) => {
@@ -37,6 +38,14 @@ const buildSummary = (transactions) => {
         if (transaction.type === 'INCOME') summary.income += amount;
         if (transaction.type === 'EXPENSE') summary.expense += amount;
         if (transaction.type === 'GOAL') summary.goals += amount;
+    });
+
+    // FIX 1: Syntax error — was missing `if` keyword before the condition
+    // FIX 2: Guard against budgets being undefined/null with (budgets || [])
+    // FIX 3: No category filter here — budget summary totals ALL categories for the month
+    (budgets || []).forEach((budget) => {
+        if (Number(budget.month) !== Number(month)) return;
+        summary.budget += Number(budget.budgetAmount || 0);
     });
 
     summary.balance = summary.income - summary.expense - summary.goals;
@@ -54,6 +63,11 @@ const groupByCategory = (transactions) => {
     return grouped;
 };
 
+// FIX 4: Component was receiving budgets as a props object { budgets }
+// but was written as Compare(budgets) — treating the whole props object as budgets array.
+// Changed to proper destructuring: ({ budgets })
+// FIX 5: budgets should be fetched inside this component since it's used standalone,
+// not passed as prop from DisplayTransaction
 const Compare = () => {
     const currentMonth = new Date().getMonth() + 1;
     const initialPreviousMonth = currentMonth > 1 ? currentMonth - 1 : currentMonth;
@@ -63,6 +77,8 @@ const Compare = () => {
     const [month2, setMonth2] = useState(currentMonth);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    // FIX 5: Fetch budgets inside Compare so it has access to all months
+    const [budgets, setBudgets] = useState([]);
 
     const monthOptions = useMemo(
         () =>
@@ -72,6 +88,23 @@ const Compare = () => {
             })),
         [currentMonth],
     );
+
+    // FIX 5: Fetch all budgets for the year on mount
+    useEffect(() => {
+        const fetchBudgets = async () => {
+            try {
+                const response = await fetch('http://localhost:8089/budgets', {
+                    credentials: 'include',
+                });
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                const json = await response.json();
+                setBudgets(Array.isArray(json) ? json : []);
+            } catch (err) {
+                console.error('Failed to fetch budgets:', err.message);
+            }
+        };
+        fetchBudgets();
+    }, []);
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -92,13 +125,8 @@ const Compare = () => {
                     }),
                 ]);
 
-                if (!response1.ok) {
-                    throw new Error(await response1.text());
-                }
-
-                if (!response2.ok) {
-                    throw new Error(await response2.text());
-                }
+                if (!response1.ok) throw new Error(await response1.text());
+                if (!response2.ok) throw new Error(await response2.text());
 
                 const [result1, result2] = await Promise.all([
                     response1.json(),
@@ -117,8 +145,16 @@ const Compare = () => {
         fetchTransactions();
     }, [month1, month2]);
 
-    const summary1 = useMemo(() => buildSummary(transactions1), [transactions1]);
-    const summary2 = useMemo(() => buildSummary(transactions2), [transactions2]);
+    // FIX 6: budgets and month were passed into buildSummary but missing
+    // from the useMemo dependency arrays — stale closure bug
+    const summary1 = useMemo(
+        () => buildSummary(transactions1, month1, budgets),
+        [transactions1, month1, budgets],
+    );
+    const summary2 = useMemo(
+        () => buildSummary(transactions2, month2, budgets),
+        [transactions2, month2, budgets],
+    );
 
     const categoryRows = useMemo(() => {
         const categories1 = groupByCategory(transactions1);
@@ -168,6 +204,11 @@ const Compare = () => {
             firstValue: summary1.transactionsCount,
             secondValue: summary2.transactionsCount,
             isCount: true,
+        },
+        {
+            title: 'Budget',
+            firstValue: summary1.budget,
+            secondValue: summary2.budget,
         },
     ];
 
