@@ -38,10 +38,12 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
     const chartInstanceRef = useRef(null);
     const [products, setProducts] = useState([]);
     const [searchVal, setSearchVal] = useState("");
+
+    // FIX 1: Fetch ALL budgets for the current year (not just current month)
     useEffect(() => {
         const fetchBudgets = async () => {
             try {
-                const response = await fetch(`http://localhost:8089/budgets/${currentMonthNumber}`, {
+                const response = await fetch(`http://localhost:8089/budgets`, {
                     credentials: 'include',
                 });
 
@@ -57,9 +59,8 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
                 setLoading(false);
             }
         };
-
         fetchBudgets();
-    }, [currentMonthNumber]);
+    }, []); // no dependency needed — backend already scopes to current year
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -95,7 +96,8 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
 
                 const result = await response.json();
                 setTransactions(Array.isArray(result) ? result : []);
-                setProducts(transactions);
+                // FIX 2: Removed stale setProducts(transactions) call here —
+                // transactions state hasn't updated yet at this point (always [])
 
                 if (filter === '1') {
                     setViewMode('details');
@@ -119,15 +121,14 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
     }, [currentMonthNumber, filter]);
 
     function handleSearchClick() {
-        setProducts(paginatedTransactions);
-        console.log(searchVal);
         if (searchVal === "") { setProducts(products); return; }
         const filterBySearch = products.filter((item) => {
             if (item.category.toLowerCase()
                 .includes(searchVal.toLowerCase())) { return item; }
-        })
+        });
         setProducts(filterBySearch);
     }
+
     const filteredTransactions = useMemo(
         () =>
             transactions.filter((transaction) => {
@@ -147,6 +148,9 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
             const month = txDate.getMonth() + 1;
             const year = txDate.getFullYear();
             const key = `${year}-${month}`;
+
+            // FIX 3: Now correctly matches budget per month since budgets array
+            // contains ALL months for the current year (fetched from /budgets)
             const monthBudget = budgets
                 .filter((budget) => Number(budget.month) === month)
                 .reduce((sum, budget) => sum + Number(budget.budgetAmount || 0), 0);
@@ -187,6 +191,9 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
 
     const categorySummary = useMemo(() => {
         const summary = {};
+
+        // FIX 4: Derive monthNumber correctly from selectedMonth for budget matching
+        // selectedMonth is 0-indexed (JS Date month), so add 1 for budget comparison
         const monthNumber = selectedMonth !== null ? selectedMonth + 1 : null;
 
         filteredTransactions.forEach((transaction) => {
@@ -202,6 +209,9 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
             }
         });
 
+        // FIX 5: Budget matching for categorySummary now works correctly because
+        // budgets array contains all months — previously only current month budgets
+        // were loaded, so any selectedMonth != currentMonth showed zero budget here
         if (monthNumber) {
             budgets.forEach((budget) => {
                 if (!budget?.category || Number(budget.month) !== monthNumber) return;
@@ -235,22 +245,17 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
     }, [filteredTransactions]);
 
     const searchedTransactions = useMemo(() => {
-    if (!searchVal.trim()) return filteredTransactions;
-    return filteredTransactions.filter(item =>
-        item.category?.toLowerCase().includes(searchVal.toLowerCase())
-    );
-}, [filteredTransactions, searchVal]);
+        if (!searchVal.trim()) return filteredTransactions;
+        return filteredTransactions.filter(item =>
+            item.category?.toLowerCase().includes(searchVal.toLowerCase())
+        );
+    }, [filteredTransactions, searchVal]);
 
     const totalPages = Math.max(1, Math.ceil(searchedTransactions.length / ITEMS_PER_PAGE));
-const paginatedTransactions = searchedTransactions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-);
-    // const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE));
-    // const paginatedTransactions = filteredTransactions.slice(
-    //     (currentPage - 1) * ITEMS_PER_PAGE,
-    //     currentPage * ITEMS_PER_PAGE,
-    // );
+    const paginatedTransactions = searchedTransactions.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE,
+    );
 
     const summaryMetrics = useMemo(() => ({
         totalSpent: groupedTransactions.reduce((sum, item) => sum + item.expense, 0),
@@ -445,18 +450,18 @@ const paginatedTransactions = searchedTransactions.slice(
                     <button className={detailsView === 'insights' ? 'view-toggle active' : 'view-toggle'} onClick={() => setDetailsView('insights')} type="button">
                         Insights
                     </button>
-                            {detailsView === 'table' && (
-                                <form className="d-flex" role="search" id="searchForm">
-                                    <input
-                                        className="form-control me-2 border border-dark"
-                                        type="search"
-                                        placeholder="Search"
-                                        aria-label="Search"
-    onChange={e => setSearchVal(e.target.value)}
-    onKeyDown={e => e.key === "Enter" && handleSearchClick()}
-  />
-</form>)}
-                {/* <BsSearch  /> */}
+                    {detailsView === 'table' && (
+                        <form className="d-flex" role="search" id="searchForm">
+                            <input
+                                className="form-control me-2 border border-dark"
+                                type="search"
+                                placeholder="Search"
+                                aria-label="Search"
+                                onChange={e => setSearchVal(e.target.value)}
+                                onKeyDown={e => e.key === "Enter" && handleSearchClick()}
+                            />
+                        </form>
+                    )}
                 </div>
 
                 {selectionMode && selectedTxns.size > 0 && (
