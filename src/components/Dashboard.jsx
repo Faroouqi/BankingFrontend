@@ -12,6 +12,7 @@ const filterMap = {
     goals: '4',
     spendings: '5',
     savings: '6',
+    compare: '7',
 };
 
 const Dashboard = () => {

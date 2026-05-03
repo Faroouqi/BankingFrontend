@@ -7,6 +7,7 @@ import DisplayGoalTransaction from './DisplayGoalTransaction';
 import DisplaySpendingChart from './DisplaySpendingChart';
 import SmartInsights from './SmartInsights';
 import SavingsTrend from './SavingsTrend';
+import Compare from './Compare';
 
 const ITEMS_PER_PAGE = 8;
 const monthNames = [
@@ -345,6 +346,7 @@ const paginatedTransactions = searchedTransactions.slice(
     if (filter === '4') return <DisplayGoalTransaction onUpdate={onUpdate} />;
     if (filter === '5') return <DisplaySpendingChart />;
     if (filter === '6') return <SavingsTrend />;
+    if (filter === '7') return <Compare />;
 
     if (viewMode === 'summary') {
         return (
