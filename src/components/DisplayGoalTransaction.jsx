@@ -57,7 +57,7 @@ const DisplayGoalTransaction = ({ onUpdate }) => {
             removeGoalName(goalName);
             onUpdate(getGoalNames());
         } catch (err) {
-            alert(`Error deleting goal: ${err.message}`);
+            error(`Error deleting goal: ${err.message}`);
         }
     };
 

@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import { addGoalName, getGoalNames } from './GoalStorage';
-
+import { useAlertContext } from './useAlert';
 const GoalPopup = ({ onClose, onUpdate }) => {
+    const { success, error } = useAlertContext();
     const navigate = useNavigate();
     const [goals, setGoals] = useState([{ name: '', amount: '', date: '' }]);
     const [errors, setErrors] = useState([{ amount: '' }]);
@@ -79,12 +80,12 @@ const GoalPopup = ({ onClose, onUpdate }) => {
                 if (!response.ok) throw new Error('Goal creation failed');
                 addGoalName(goal.name);
             } catch (err) {
-                alert(`Error adding goal: ${err.message}`);
+                error(`Error adding goal: ${err.message}`);
                 return;
             }
         }
 
-        alert('Goals added successfully');
+        success('Goals added successfully');
         setGoals([{ name: '', amount: '', date: '' }]);
         onUpdate(getGoalNames());
         onClose();

@@ -2,8 +2,10 @@ import React, {useCallback, useEffect, useState} from 'react';
 import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import {FaTimes} from "react-icons/fa";
+import { useAlertContext } from './useAlert';
 
 const BudgetPopup = ({ onClose}) => {
+    const { success, error } = useAlertContext();
     const navigate = useNavigate();
     const [budgets, setBudgets] = useState([{ category: '', amount: '', month: '', year: '' }]);
     const [errors, setErrors] = useState([{ amount: '', month: '', year: '' }]);
@@ -90,11 +92,11 @@ const BudgetPopup = ({ onClose}) => {
                 }
                 if (!response.ok) throw new Error('Budget creation failed');
             } catch (err) {
-                alert('Error adding budget: ' + err.message);
+                error('Error adding budget: ' + err.message);
                 return;
             }
         }
-        alert('Budgets added successfully');
+        success('Budgets added successfully');
         setBudgets([{ category: '', amount: '', month: '', year: '' }]);
         onClose();
     };

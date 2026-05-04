@@ -5,21 +5,30 @@ import Login from './components/Login.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './css/index.css';
+import { AlertProvider } from './components/useAlert';
+
+function AppRoot() {
+  return (
+    <BrowserRouter>
+      <AlertProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AlertProvider>
+    </BrowserRouter>
+  );
+}
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Login />} />
-                <Route
-                    path="/dashboard"
-                    element={(
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    )}
-                />
-            </Routes>
-        </BrowserRouter>
-    </StrictMode>
+  <StrictMode>
+    <AppRoot />
+  </StrictMode>
 );

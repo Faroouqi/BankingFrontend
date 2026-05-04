@@ -19,7 +19,7 @@ const DeleteTransaction = async (selectedTxns, setTransactions) => {
         setTransactions((prev) => prev.filter((txn) => !selectedTxns.has(txn.id)));
         return true;
     } catch (err) {
-        alert(err.message);
+        error(err.message);
         return false;
     }
 };

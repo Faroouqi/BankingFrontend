@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
-
+import { useAlertContext } from './useAlert';
 const TransactionPopup = ({ onClose, Goals }) => {
+    const { success, error } = useAlertContext();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         type: 'EXPENSE',
@@ -13,7 +14,7 @@ const TransactionPopup = ({ onClose, Goals }) => {
         note: '',
     });
     const [disabled, setDisabled] = useState(true);
-    const [error, setError] = useState('');
+    const [error1, setError1] = useState('');
     const [goals, setGoals] = useState(false);
     const [names, setNames] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +46,7 @@ const TransactionPopup = ({ onClose, Goals }) => {
         const hasError = formData.amount !== '' && !isAmountValid;
         const shouldDisable = !formData.amount || !formData.category || hasError;
 
-        setError(hasError ? 'Enter a valid number' : '');
+        setError1(hasError ? 'Enter a valid number' : '');
         setDisabled(shouldDisable);
     }, [formData]);
 
@@ -53,7 +54,7 @@ const TransactionPopup = ({ onClose, Goals }) => {
         event.preventDefault();
 
         if (!isValidNumber(formData.amount)) {
-            alert('Please enter a number');
+            error1('Please enter a number');
             return;
         }
 
@@ -80,10 +81,10 @@ const TransactionPopup = ({ onClose, Goals }) => {
             }
 
             await response.json();
-            alert('Transaction added successfully');
+            success('Transaction added successfully');
             onClose();
         } catch (err) {
-            alert(`Error adding transaction: ${err.message}`);
+            error('Error adding transaction');
         }
     };
 
@@ -171,7 +172,7 @@ const TransactionPopup = ({ onClose, Goals }) => {
                                 onChange={handleChange}
                                 required
                             />
-                            {error && <small className="error">{error}</small>}
+                            {error1 && <small className="error">{error1}</small>}
                         </div>
 
                         <div className="form-group">
