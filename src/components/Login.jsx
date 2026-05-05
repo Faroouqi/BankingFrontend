@@ -68,9 +68,10 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE}/send-otp`, {
+                const response = await fetch(`${API_BASE}/send-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',   
                 body: JSON.stringify({ email: formData.email }),
             });
 
@@ -93,13 +94,11 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const verifyResponse = await fetch(`${API_BASE}/verify-otp`, {
+                        const verifyResponse = await fetch(`${API_BASE}/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: formData.email,
-                    otp,
-                }),
+                credentials: 'include',   // 👈 add this
+                body: JSON.stringify({ email: formData.email, otp }),
             });
 
             if (!verifyResponse.ok) {
@@ -141,9 +140,10 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE}/reset-password`, {
+                        const response = await fetch(`${API_BASE}/reset-password`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',   // 👈 add this
                 body: JSON.stringify(forgotForm),
             });
 
