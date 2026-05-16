@@ -1,8 +1,23 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import '../css/Popup.css';
 import { useNavigate } from 'react-router-dom';
 import {FaTimes} from "react-icons/fa";
 import { useAlertContext } from './useAlert';
+
+const monthLabels = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+];
 
 const BudgetPopup = ({ onClose}) => {
     const { success, error } = useAlertContext();
@@ -10,6 +25,16 @@ const BudgetPopup = ({ onClose}) => {
     const [budgets, setBudgets] = useState([{ category: '', amount: '', month: '', year: '' }]);
     const [errors, setErrors] = useState([{ amount: '', month: '', year: '' }]);
     const [disabled, setDisabled] = useState(true);
+    const currentMonth = new Date().getMonth() + 1;
+
+    const monthOptions = useMemo(
+        () =>
+            Array.from({ length: currentMonth }, (_, index) => ({
+                value: index + 1,
+                label: monthLabels[index],
+            })),
+        [currentMonth],
+    );
 
     const isValidNumber = useCallback((str) => {
         const num = Number(str);
@@ -79,8 +104,8 @@ const BudgetPopup = ({ onClose}) => {
                     credentials: 'include',
                     body: JSON.stringify({
                         category: budget.category,
-                        month: budget.month,
-                        year: budget.year,
+                        month: Number(budget.month),
+                        year: Number(budget.year),
                         budgetAmount: amount,
                         userId: null
                     }),
@@ -140,14 +165,19 @@ const BudgetPopup = ({ onClose}) => {
                                         {errors[index].amount && <small className="error">{errors[index].amount}</small>}
                                     </td>
                                     <td>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="month"
-                                            placeholder="e.g. 07"
                                             value={budget.month}
                                             onChange={(e) => handleChange(index, e)}
                                             required
-                                        />
+                                        >
+                                            <option value="">Select month</option>
+                                            {monthOptions.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                         {errors[index].month && <small className="error">{errors[index].month}</small>}
                                     </td>
                                     <td>

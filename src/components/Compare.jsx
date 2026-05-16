@@ -217,7 +217,7 @@ const Compare = () => {
             <div className="section-header">
                 <div>
                     <p className="section-kicker">Comparison</p>
-                    <h2 className="section-title">Month vs month comparison</h2>
+                    <h2 className="section-title">{monthLabels[month1 - 1]} vs {monthLabels[month2 - 1]} comparison</h2>
                 </div>
             </div>
 
