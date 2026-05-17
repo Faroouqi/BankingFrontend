@@ -8,6 +8,7 @@ import DisplaySpendingChart from './DisplaySpendingChart';
 import SmartInsights from './SmartInsights';
 import SavingsTrend from './SavingsTrend';
 import Compare from './Compare';
+import Loan from './Loan';
 
 const ITEMS_PER_PAGE = 8;
 const monthNames = [
@@ -93,7 +94,7 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
                 if (!response.ok) {
                     throw new Error(await response.text());
                 }
-
+                console.log('Raw response for transactions:', response);
                 const result = await response.json();
                 setTransactions(Array.isArray(result) ? result : []);
                 // FIX 2: Removed stale setProducts(transactions) call here —
@@ -352,6 +353,7 @@ const DisplayTransaction = ({ filter, onUpdate }) => {
     if (filter === '5') return <DisplaySpendingChart />;
     if (filter === '6') return <SavingsTrend />;
     if (filter === '7') return <Compare />;
+    if (filter === '8') return <Loan />;
 
     if (viewMode === 'summary') {
         return (

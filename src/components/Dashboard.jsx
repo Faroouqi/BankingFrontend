@@ -13,6 +13,7 @@ const filterMap = {
     spendings: '5',
     savings: '6',
     compare: '7',
+    loans: '8',
 };
 
 const Dashboard = () => {

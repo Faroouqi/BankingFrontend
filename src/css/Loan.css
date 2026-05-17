@@ -1,0 +1,148 @@
+.loan-shell {
+    display: grid;
+    gap: 22px;
+}
+
+.loan-stat-grid {
+    margin-bottom: 0;
+}
+
+.loan-form-card {
+    padding: 22px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(16, 32, 58, 0.08);
+    box-shadow: 0 18px 34px rgba(18, 47, 89, 0.08);
+}
+
+.loan-form-header {
+    margin-bottom: 18px;
+}
+
+.loan-form-header h3,
+.loan-form-header p,
+.loan-subtitle {
+    margin: 0;
+}
+
+.loan-form-header p {
+    margin-top: 8px;
+    color: var(--text-muted);
+}
+
+.loan-form {
+    display: grid;
+    gap: 16px;
+}
+
+.loan-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.loan-field {
+    display: grid;
+    gap: 8px;
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.loan-field span {
+    font-size: 0.9rem;
+}
+
+.loan-field input,
+.loan-field textarea,
+.loan-pay-box input {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(16, 32, 58, 0.12);
+    background: rgba(247, 250, 255, 0.95);
+    color: var(--text-main);
+}
+
+.loan-field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.loan-field input:focus,
+.loan-field textarea:focus,
+.loan-pay-box input:focus {
+    border-color: rgba(29, 102, 210, 0.42);
+    box-shadow: 0 0 0 4px rgba(29, 102, 210, 0.08);
+}
+
+.loan-form-actions {
+    max-width: 220px;
+}
+
+.loan-list-header {
+    margin-bottom: 0;
+}
+
+.loan-subtitle {
+    font-size: 1.2rem;
+}
+
+.loan-table td {
+    vertical-align: top;
+}
+
+.loan-remaining {
+    font-weight: 800;
+    color: #a01f31;
+}
+
+.loan-note-cell {
+    min-width: 160px;
+    color: var(--text-muted);
+}
+
+.loan-pay-box {
+    min-width: 180px;
+    display: grid;
+    gap: 8px;
+}
+
+.loan-pay-button {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1d66d2, #0fb38d);
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.loan-pay-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.loan-inline-error {
+    display: block;
+    margin-top: 6px;
+    color: #a01f31;
+}
+
+.status-badge.warning {
+    color: #8a5a00;
+    background: rgba(243, 182, 60, 0.18);
+}
+
+@media (max-width: 1100px) {
+    .loan-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .loan-form-card {
+        padding: 18px;
+    }
+
+    .loan-pay-box {
+        min-width: 140px;
+    }
+}

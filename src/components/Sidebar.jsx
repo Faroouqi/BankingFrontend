@@ -12,6 +12,7 @@ const overviewFilters = [
     { value: 'spendings', label: 'Spending' },
     { value: 'savings', label: 'Savings' },
     { value: 'compare', label: 'Compare' },
+    { value: 'loans', label: 'Loans' },
 ];
 
 const Sidebar = ({ handleFilterChange }) => {
